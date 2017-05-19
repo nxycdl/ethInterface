@@ -1,0 +1,15 @@
+<div class="pure-g content padding-top">
+
+    {% for item in data%}
+    <div class="pure-u-1-4">
+        <button class="button-xsmall button-clear cell" onclick="{% if item.online_flag == '1'%} makeacall('{{item.module_url}}','GET'); {% else %} goToStayTuned(); {% endif%}">
+            <div class="images-wrapper">
+                <img class="image-container" src="http://localhost:9000/image/{{item.module_img}}"/>
+                        <span class="images-content white font-large">
+                            <h1>{{item.module_name}}</h1>
+                        </span>
+            </div>
+        </button>
+    </div>
+    {% endfor%}
+</div>

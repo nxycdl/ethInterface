@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+                  xmlns:tns="http://schemas.microsoft.com/office/Outlook/2006/OMS"
+                  xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/"
+                  xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+                  targetNamespace="http://schemas.microsoft.com/office/Outlook/2006/OMS"
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <wsdl:types>
+        <s:schema elementFormDefault="qualified" targetNamespace="http://schemas.microsoft.com/office/Outlook/2006/OMS">
+            <s:element name="GetUserInfo">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="xmsUser" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+            <s:element name="UserInfoResponse">
+                <s:complexType>
+                    <s:sequence>
+                        <s:element minOccurs="0" maxOccurs="1" name="UserInfoResponse" type="s:string"/>
+                    </s:sequence>
+                </s:complexType>
+            </s:element>
+        </s:schema>
+    </wsdl:types>
+    <wsdl:message name="GetUserInfoSoapIn">
+        <wsdl:part name="parameters" element="tns:GetUserInfo"/>
+    </wsdl:message>
+    <wsdl:message name="GetUserInfoSoapOut">
+        <wsdl:part name="parameters" element="tns:UserInfoResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="OMSSoap">
+        <wsdl:operation name="GetUserInfo">
+            <wsdl:input message="tns:GetUserInfoSoapIn"/>
+            <wsdl:output message="tns:GetUserInfoSoapOut"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="OMSSoap" type="tns:OMSSoap">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="GetUserInfo">
+            <soap:operation soapAction="http://schemas.microsoft.com/office/Outlook/2006/OMS/GetUserInfo"
+                            style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="OMS">
+        <wsdl:port name="OMSSoap" binding="tns:OMSSoap">
+            <soap:address location="http://localhost:8080/zsyyServise"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

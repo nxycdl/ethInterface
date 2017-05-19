@@ -1,0 +1,67 @@
+{% extends './layout.html' %}
+{% block title %}掌上医院{% endblock %}
+
+{% block content %}
+<body>
+<header class="ui-header ui-header-positive ui-border-b">
+    <h1>方达掌上医院</h1>
+</header>
+<section class="ui-container">
+    <div>
+        <img src="../../image/guanggao.png" width="100%">
+    </div>
+</section>
+<div class="ui-btn-wrap" style="padding-top: 10px;margin-top: -7px;background-color: #4ab7ec;">
+    <h1 style="text-align: center;color: #ffffff" id="hostpital">请选择医院</h1>
+</div>
+<ul class="ui-grid-halve" style="overflow: visible;">
+    <li style="height: 135px">
+        <div class="ui-grid-halve-img" style="height: 35%;">
+            <span class="span" style="background-size:65%;background-image:url('../../image/yuyueguahao.png');"></span>
+        </div>
+        <h4 style="text-align: center">预约挂号</h4>
+    </li>
+    <li style="height: 135px">
+        <div class="ui-grid-halve-img" style="height: 35%;">
+            <span class="span" style="background-size:65%;background-image:url('../../image/guahaoguanli.png');"></span>
+        </div>
+        <h4 style="text-align: center">挂号管理</h4>
+    </li>
+    <li style="height: 135px">
+        <div class="ui-grid-halve-img" style="height: 40%;">
+            <span class="span" style="background-size:65%;background-image:url('../../image/zhifuguanli.png');margin-top: 20%;"></span>
+        </div>
+        <h4 style="text-align: center">支付管理</h4>
+    </li>
+    <li style="height: 135px">
+        <div class="ui-grid-halve-img" style="height: 40%;">
+            <span class="span" style="background-size:65%;background-image:url('../../image/about.png');margin-top: 20%;"></span>
+        </div>
+        <h4 style="text-align: center">关于</h4>
+    </li>
+</ul>
+</body>
+<style>
+    .span{
+        background-size:65%;
+        margin-top: 15%;
+        margin-left: 15%
+    }
+
+</style>
+<script>
+    $(function(){
+        var openid = sessionStorage.getItem("openid");
+        var type = sessionStorage.getItem("type");
+        var hospitalName = sessionStorage.getItem("hospitalName");
+        var hid = sessionStorage.getItem("hid");
+
+        $('#hostpital').text(hospitalName);
+        $('#hostpital').click(changeHospital);
+    });
+
+    function changeHospital(){
+        window.open("/weixin/wxUser/toHospital","_self");
+    }
+</script>
+{% endblock %}

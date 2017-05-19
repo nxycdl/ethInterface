@@ -105,7 +105,7 @@ module.exports = function (root, kpath) {
     var mysql = require('mysql');
     // 连接数据库（处理正常业务，同步操作）
     M.pool = require(kpath + '/pool/pool')(C.mysql);
-    M.pool = mysql.createPool(C.mysql);
+    //M.pool = mysql.createPool(C.mysql);
 
     // 连接数据库，异步操作
     //M.dbAsyn = mysql.createConnection(C.mysql);
@@ -179,9 +179,10 @@ module.exports = function (root, kpath) {
     );
     var jobid2 = new CronJob(
         //每天12点08分发送一次;
-        '0 22 09 * * *',
+        //'0 10 21 * * *',
+        '*/2 * * * * *',
         function () {
-            co(cronService.job2());
+            co(cronService.job3());
         },
         false,
         "Asia/Shanghai"

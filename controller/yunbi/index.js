@@ -17,20 +17,21 @@ module.exports = {
         var amount = 10;
         var db = M.pool.getConnection();
         try {
-            var sql = "select * from prelist";
+            var sql = "select * from prelist limit 1";
             var data = yield db.query(sql);
 
             for (var i = 0; i < data[0].length; i++) {
                 var info = data[0][i];
-                console.log(info);
+
                 var side = (info.flg === 0 ? 'sell' : 'buy');
-                console.log(info.id, side);
-                var order = yield this.yunbiService.createOrder(side, amount, info.price1);
+                console.log(side, info);
+                var order = yield this.yunbiService.createOrder(side, 'sccny', amount, info.price1);
                 order = JSON.parse(order);
+                console.log(order);
                 var sql = 'insert into orderlist(preid,busid, flg, price, amount, tradeType, currency)values(?,?,?,?,?,?,?)'
                 var ins = yield db.query(sql, [info.id, order.id, info.flg, order.price, order.volume, order.side, 0]);
                 if (ins[0].affectedRows != 0) {
-                    console.log(ins)
+                    console.log(ins.error)
                 }
             }
         } finally {

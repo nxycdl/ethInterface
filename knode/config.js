@@ -16,11 +16,7 @@ module.exports=function(root){
         port:9000,
         //mysql设置
        mysql:{
-            host: '120.26.109.153',
-            port: '3306',
-            database: 'btc',
-            user: 'btc',
-            password: 'btc99999',
+
             waitForConnections: true,
             connectionLimit: 20,
             supportBigNumbers: true,

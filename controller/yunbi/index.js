@@ -17,7 +17,7 @@ module.exports = {
         var amount = 10;
         var db = M.pool.getConnection();
         try {
-            var sql = "select * from prelist limit 1";
+            var sql = "select * from prelist ";
             var data = yield db.query(sql);
 
             for (var i = 0; i < data[0].length; i++) {

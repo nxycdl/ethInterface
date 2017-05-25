@@ -2,6 +2,10 @@
  * Created by dl on 2017-01-04.
  */
 var wxUtils = require(C.service + 'weixin/wxUtils')();
+var yunbiService = require(C.service + 'yunbi/yunbiService')();
+
+
+
 module.exports = {
 
     job1: function *() {
@@ -70,11 +74,12 @@ module.exports = {
     job2: function *() {
         console.log(new Date(), 'This is Job2 start');
     },
-    job3: function*() {
-        var url = 'http://api.chbtc.com/data/v1/ticker?currency=eth_cny';
+    getTickers: function*() {
+        var url = 'https://yunbi.com//api/v2/tickers/sccny.json';
         var result = {
             body: '[]'
         }
+        console.log('start get tickers \t\t' + new Date());
         try {
             result = yield M.request({
                 uri: url,
@@ -86,13 +91,14 @@ module.exports = {
                 body: '[]'
             }
         }
+        console.log('end get tickers \t\t' + new Date());
         if (result.body.length == 0) {
             return;
         }
         result = JSON.parse(result.body);
 
-        var date = new Date(parseInt(result.date));
-        console.log(date);
+        var date = new Date(parseInt(result.at * 1000));
+
         var db = M.pool.getConnection();
         try {
             var sql = "insert into busslog (rq, buy, high, low, sell, last, vol)values(?,?,?,?,?,?,?)";
@@ -101,5 +107,52 @@ module.exports = {
         } finally {
             M.pool.releaseConnection(db);
         }
+    },
+    setOrder: function*() {
+        var data = {
+            price: 1,
+            amount: 1,
+            tradeType: 1,
+            currency: ltc_cny
+        }
+
+        var url = "https://trade.chbtc.com/api/order?method=order&accesskey=accesskey&price=1024&amount=1.5&tradeType=1&currency=btc_cny&sign=请求加密签名串&reqTime=当前时间毫秒数";
+
+    },
+    createOrder: function*(side, market, volume, price) {
+        var data = yield yunbiService.createOrder(side, market, volume, price);
+        console.log(data);
+    },
+    getOrderList: function*(market) {
+        var orderList = yield yunbiService.getOrderList(market);
+        console.log(orderList);
+    },
+    createJobList: function*() {
+        var buylist = [];
+        var selllist = [];
+        buylist = [[0.06093, 0.06213, 0.06093, 0.06213, 0.06093, 0.06213],
+            [0.05973, 0.06093, 0.05973, 0.06093, 0.05973, 0.06093],
+            [0.05853, 0.05973, 0.05853, 0.05973, 0.05853, 0.05973]];
+        selllist = [[0.06111, 0.05991, 0.06111, 0.05991, 0.06111, 0.05991],
+            [0.06231, 0.06111, 0.06231, 0.06111, 0.06231, 0.06111],
+            [0.06351, 0.06231, 0.06351, 0.06231, 0.06351, 0.06231]];
+
+        var db = M.pool.getConnection();
+        try {
+            var sql = "delete from prelist";
+            var data = yield db.query(sql);
+            for (var i = 0 ; i < buylist.length;i++){
+                var sql = "insert into prelist (flg, price1, price2)values(?,?,?)";
+                var data = yield db.query(sql, [1,buylist[i][0],buylist[i][1]]);
+            }
+            for (var i = 0 ; i < selllist.length;i++){
+                var sql = "insert into prelist (flg, price1, price2)values(?,?,?)";
+                var data = yield db.query(sql, [0,selllist[i][0],selllist[i][1]]);
+            }
+        } finally {
+            M.pool.releaseConnection(db);
+        }
+        console.log('数据库写入成功！');
+
     }
 }

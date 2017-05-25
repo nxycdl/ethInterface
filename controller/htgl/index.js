@@ -22,7 +22,7 @@ module.exports = {
         this.body = yield this.render("home");
     },
     dbtest: function*() {
-        var url = 'http://api.chbtc.com/data/v1/ticker?currency=eth_cny';
+        var url = 'https://yunbi.com//api/v2/tickers/sccny.json';
         var result = {
             body: '[]'
         }

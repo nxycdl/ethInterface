@@ -47,7 +47,7 @@ module.exports = function (root, kpath) {
     M.request = request;
     M.parseString = parseString;
     M.thunkify = thunkify;
-    M.querystring = thunkify;
+    M.querystring = querystring;
     M.fs = fs;
     M.formidable = formidable;
     M.path = path;
@@ -170,9 +170,10 @@ module.exports = function (root, kpath) {
 
     var jobid = new CronJob(
         //每天08点02分发送一次;
-        '0 10 08 * * *',
+        '*/5 * * * * *',
         function () {
-            co(cronService.job1());
+            // co(cronService.getTickers());
+            // co(cronService.getOrderList( 'sccny'));
         },
         false,
         "Asia/Shanghai"
@@ -180,15 +181,32 @@ module.exports = function (root, kpath) {
     var jobid2 = new CronJob(
         //每天12点08分发送一次;
         //'0 10 21 * * *',
-        '*/2 * * * * *',
+        '*/20 * * * * *',
         function () {
-            co(cronService.job3());
+            // co(cronService.job3());
+            // co(cronService.getOrderList( 'sccny'));
         },
         false,
         "Asia/Shanghai"
     );
+
+    var jobList = new CronJob(
+        //每天12点08分发送一次;
+        //'0 10 21 * * *',
+        '*/5 * * * * *',
+        function () {
+            //co(cronService.createJobList());
+        },
+        false,
+        "Asia/Shanghai"
+    );
+
     jobid.start();
     jobid2.start();
+    jobList.start();
+    setTimeout(function () {
+        jobList.stop();
+    }, 6000)
 
     //404页面
     app.use(function * pageNotFound(next) {

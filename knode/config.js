@@ -20,7 +20,7 @@ module.exports=function(root){
             port: '3306',
             database: 'btc',
             user: 'btc',
-            password: '*******',
+            password: 'btc99999',
             waitForConnections: true,
             connectionLimit: 20,
             supportBigNumbers: true,

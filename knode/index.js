@@ -170,10 +170,11 @@ module.exports = function (root, kpath) {
 
     var jobid = new CronJob(
         //每天08点02分发送一次;
-        '*/5 * * * * *',
+        '*/10 * * * * *',
         function () {
-            // co(cronService.getTickers());
-            // co(cronService.getOrderList( 'sccny'));
+            co(cronService.getTickers('sccny'));
+            co(cronService.getTickers('qtumcny'));
+             // co(cronService.getOrderList( 'sccny'));
         },
         false,
         "Asia/Shanghai"
@@ -184,7 +185,7 @@ module.exports = function (root, kpath) {
         '*/20 * * * * *',
         function () {
             // co(cronService.job3());
-            // co(cronService.getOrderList( 'sccny'));
+            // co(cronService.checkOrder( 'sccny'));
         },
         false,
         "Asia/Shanghai"

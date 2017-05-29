@@ -5,7 +5,6 @@ var wxUtils = require(C.service + 'weixin/wxUtils')();
 var yunbiService = require(C.service + 'yunbi/yunbiService')();
 
 
-
 module.exports = {
 
     job1: function *() {
@@ -74,8 +73,8 @@ module.exports = {
     job2: function *() {
         console.log(new Date(), 'This is Job2 start');
     },
-    getTickers: function*() {
-        var url = 'https://yunbi.com//api/v2/tickers/sccny.json';
+    getTickers: function*(market) {
+        var url = 'https://yunbi.com//api/v2/tickers/' + market + '.json';
         var result = {
             body: '[]'
         }
@@ -92,6 +91,7 @@ module.exports = {
             }
         }
         console.log('end get tickers \t\t' + new Date());
+        console.log('end get tickers \t\t' + result.body);
         if (result.body.length == 0) {
             return;
         }
@@ -101,8 +101,8 @@ module.exports = {
 
         var db = M.pool.getConnection();
         try {
-            var sql = "insert into busslog (rq, buy, high, low, sell, last, vol)values(?,?,?,?,?,?,?)";
-            var data = yield db.query(sql, [date, result.ticker.buy, result.ticker.high, result.ticker.low, result.ticker.sell, result.ticker.last, result.ticker.vol]);
+            var sql = "insert into busslog (market,rq, buy, high, low, sell, last, vol)values(?,?,?,?,?,?,?,?)";
+            var data = yield db.query(sql, [market, date, result.ticker.buy, result.ticker.high, result.ticker.low, result.ticker.sell, result.ticker.last, result.ticker.vol]);
             this.body = data[0];
         } finally {
             M.pool.releaseConnection(db);
@@ -141,18 +141,47 @@ module.exports = {
         try {
             var sql = "delete from prelist";
             var data = yield db.query(sql);
-            for (var i = 0 ; i < buylist.length;i++){
+            for (var i = 0; i < buylist.length; i++) {
                 var sql = "insert into prelist (flg, price1, price2)values(?,?,?)";
-                var data = yield db.query(sql, [1,buylist[i][0],buylist[i][1]]);
+                var data = yield db.query(sql, [1, buylist[i][0], buylist[i][1]]);
             }
-            for (var i = 0 ; i < selllist.length;i++){
+            for (var i = 0; i < selllist.length; i++) {
                 var sql = "insert into prelist (flg, price1, price2)values(?,?,?)";
-                var data = yield db.query(sql, [0,selllist[i][0],selllist[i][1]]);
+                var data = yield db.query(sql, [0, selllist[i][0], selllist[i][1]]);
             }
         } finally {
             M.pool.releaseConnection(db);
         }
         console.log('数据库写入成功！');
 
+    },
+    checkOrder: function*(market) {
+        var db = M.pool.getConnection();
+        try {
+            var sql = "SELECT * FROM orderlist";
+            var data = yield db.query(sql);
+            data = data[0];
+            //console.log(data);
+            var orderList = yield yunbiService.getOrderList(market);
+            orderList = JSON.parse(orderList);
+
+            console.log('大小：' + orderList.length);
+            // console.log(orderList);
+            for (var i = 0; i < data.length; i++) {
+                var busid = data[i].busid;
+                var _count = 0;
+                for (var j = 0; j < orderList.length; j++) {
+                    if (busid == orderList[j].id) {
+                        console.log('存在\t\t' + busid)
+                        _count = _count + 1;
+                    }
+                }
+                if (_count == 0) {
+                    //交易成功了;
+                }
+            }
+        } finally {
+            M.pool.releaseConnection(db);
+        }
     }
 }

@@ -172,9 +172,8 @@ module.exports = function (root, kpath) {
         //每天08点02分发送一次;
         '*/10 * * * * *',
         function () {
-            co(cronService.getTickers('sccny'));
-            co(cronService.getTickers('qtumcny'));
-             // co(cronService.getOrderList( 'sccny'));
+             co(cronService.autoBuss());
+             co(cronService.checBuss());
         },
         false,
         "Asia/Shanghai"
@@ -182,21 +181,21 @@ module.exports = function (root, kpath) {
     var jobid2 = new CronJob(
         //每天12点08分发送一次;
         //'0 10 21 * * *',
-        '*/20 * * * * *',
+        '*/30 * * * * *',
         function () {
-            // co(cronService.job3());
-            // co(cronService.checkOrder( 'sccny'));
+            co(cronService.getTickers('sccny'));
+            co(cronService.getTickers('qtcny'))
         },
         false,
         "Asia/Shanghai"
     );
 
-    var jobList = new CronJob(
+    var jobOnce = new CronJob(
         //每天12点08分发送一次;
         //'0 10 21 * * *',
         '*/5 * * * * *',
         function () {
-            //co(cronService.createJobList());
+            // co(cronService.insertDoneOrder());
         },
         false,
         "Asia/Shanghai"
@@ -204,9 +203,9 @@ module.exports = function (root, kpath) {
 
     jobid.start();
     jobid2.start();
-    jobList.start();
+    jobOnce.start();
     setTimeout(function () {
-        jobList.stop();
+        jobOnce.stop();
     }, 6000)
 
     //404页面

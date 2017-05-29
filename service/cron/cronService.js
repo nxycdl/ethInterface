@@ -124,7 +124,7 @@ module.exports = {
         console.log(data);
     },
     getOrderList: function*(market) {
-        var orderList = yield yunbiService.getOrderList(market);
+        var orderList = yield yunbiService.getOrderList(market, 'wait');
         console.log(orderList);
     },
     createJobList: function*() {
@@ -183,5 +183,86 @@ module.exports = {
         } finally {
             M.pool.releaseConnection(db);
         }
+    },
+    autoBuss: function*() {
+        //自动交易代码；
+        //检索交易队列queue;
+        var db = M.pool.getConnection();
+        console.log("**********************START**********************");
+        try {
+            var queue = yield yunbiService.getQueueList(db, '1', '1');
+            // console.log('1 \t', queue);
+            if (queue.length == 0) return;
+            for (var i = 0; i < queue.length; i++) {
+                var market = queue[i].market;
+                var queuedetail = yield  yunbiService.getQueueDetail(db, queue[i].id);
+                var isWaiting = false;
+                for (var j = 0; j < queuedetail.length; j++) {
+                    //判断如果已经有正在等待交易的，那么继续等待;
+                    if (queuedetail[j].status == '1') {
+                        isWaiting = true;
+                    }
+                }
+                if (isWaiting == true) continue;
+                for (var j = 0; j < queuedetail.length; j++) {
+
+                    if (queuedetail[j].status == '0') {
+                        isWaiting = true;
+                        //创建这个订单;创建完毕之后退出循环，对另外一个队列创建订单;
+                        console.log('正在创建订单系统ID:\t\t' + queuedetail[j].id);
+                        var createOrderData = yield yunbiService.createOrder(queuedetail[j].side, market, queuedetail[j].volume, queuedetail[j].price);
+                        createOrderData = JSON.parse(createOrderData);
+                        var bussid = createOrderData.id;
+                        if (bussid === undefined) break;
+                        var created_at = new Date(createOrderData.created_at);
+                        var updateData = yield yunbiService.updateQueryDetail(db, queuedetail[j].id, bussid, created_at, '1');
+                        if (updateData.affectedRows == 1) {
+                            console.log('订单创建成功：系统ID:\t\t' + queuedetail[j].id);
+                        }
+                        break;
+                    }
+                }
+            }
+        } finally {
+            M.pool.releaseConnection(db);
+        }
+        console.log("************************END********************");
+    },
+    checBuss: function*() {
+        var db = M.pool.getConnection();
+        try {
+            var allWaitQueueData = yield yunbiService.getAllWaitQueueList(db, '1', '1');
+            for (var i = 0; i < allWaitQueueData.length; i++) {
+                var serverInfo = yield yunbiService.getOrderInfoFromServerById(allWaitQueueData[i].bussid);
+                serverInfo = JSON.parse(serverInfo);
+                console.log(serverInfo);
+                var state = serverInfo.state;
+                if (state === 'cancel') {
+                    yield yunbiService.updateQueryDetailStatus(db, allWaitQueueData[i].id, '-1');
+                }
+                if (state === 'done') {
+                    yield yunbiService.updateQueryDetailStatus(db, allWaitQueueData[i].id, '2');
+                }
+            }
+        } finally {
+            M.pool.releaseConnection(db);
+        }
+    },
+    insertDoneOrder: function*() {
+        var orderList = yield yunbiService.getOrderList('sccny', 'done');
+        orderList = JSON.parse(orderList);
+        var db = M.pool.getConnection();
+        try {
+            for (var i = 0; i < orderList.length; i++) {
+                var log = orderList[i];
+                var sql = "insert into busslog (market,rq, buy, high, low, sell, last, vol)values(?,?,?,?,?,?,?,?)";
+                var data = yield db.query(sql, [market, date, result.ticker.buy, result.ticker.high, result.ticker.low, result.ticker.sell, result.ticker.last, result.ticker.vol]);
+                this.body = data[0];
+
+            }
+        } finally {
+            M.pool.releaseConnection(db);
+        }
+        console.log(orderList);
     }
 }

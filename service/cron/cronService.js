@@ -91,7 +91,6 @@ module.exports = {
             }
         }
         console.log('end get tickers \t\t' + new Date());
-        console.log('end get tickers \t\t' + result.body);
         if (result.body.length == 0) {
             return;
         }
@@ -235,7 +234,7 @@ module.exports = {
             for (var i = 0; i < allWaitQueueData.length; i++) {
                 var serverInfo = yield yunbiService.getOrderInfoFromServerById(allWaitQueueData[i].bussid);
                 serverInfo = JSON.parse(serverInfo);
-                console.log(serverInfo);
+
                 var state = serverInfo.state;
                 if (state === 'cancel') {
                     yield yunbiService.updateQueryDetailStatus(db, allWaitQueueData[i].id, '-1');
@@ -263,6 +262,6 @@ module.exports = {
         } finally {
             M.pool.releaseConnection(db);
         }
-        console.log(orderList);
+
     }
 }

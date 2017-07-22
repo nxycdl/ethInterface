@@ -181,7 +181,7 @@ module.exports = function (root, kpath) {
     var jobid2 = new CronJob(
         //每天12点08分发送一次;
         //'0 10 21 * * *',
-        '*/30 * * * * *',
+        '*/5 * * * * *',
         function () {
             co(cronService.getTickers('sccny'));
             co(cronService.getTickers('qtumcny'))

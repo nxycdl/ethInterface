@@ -38,5 +38,23 @@ module.exports = {
             M.pool.releaseConnection(db);
         }
         this.body = {ret: true, message: ''};
+    },
+    sccnydept: function*() {
+        this.body = yield this.render("yunbi/sccnydept");
+    },
+    sccnydeptQuery:function*(){
+        var url = "https://plugin.sosobtc.com/widgetembed/data/depth?symbol=yunbisccny";
+        try {
+            result = yield M.request({
+                uri: url,
+                method: 'get'
+            });
+        } catch (e) {
+            console.log(e);
+            result = {
+                body: '[]'
+            }
+        }
+        this.body = result.body;
     }
 }

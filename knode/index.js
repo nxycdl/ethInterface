@@ -184,7 +184,6 @@ module.exports = function (root, kpath) {
         '*/5 * * * * *',
         function () {
             co(cronService.getTickers('sccny'));
-            co(cronService.getTickers('qtumcny'))
         },
         false,
         "Asia/Shanghai"

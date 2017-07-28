@@ -16,7 +16,11 @@ module.exports=function(root){
         port:9000,
         //mysql设置
        mysql:{
-
+            host: '120.26.109.153',
+            port: '3306',
+            database: 'btc',
+            user: 'btc',
+            password: 'btc99999',
             waitForConnections: true,
             connectionLimit: 20,
             supportBigNumbers: true,
@@ -27,7 +31,9 @@ module.exports=function(root){
         appSecret:"4536a35ce5418d49a7ecd300b01e98e4",
         expireTime:7200,
         weixinCacheToken:root+'/cacheFile/weixinCacheToken.json',
-        weixinJsApi_ticket:root+'/cacheFile/weixinJsApi_ticket.json'
+        weixinJsApi_ticket:root+'/cacheFile/weixinJsApi_ticket.json',
+        YUNBI_ACCESS_KEY : '5cxGSB4trxruisrlfpZxlmKwkDMRfAne9xDEe5JJ',
+        YUNBI_SECRET_KEY : 'xhmWD1Lr15FYFtrEqGO24lTv7D9KI0S2pXXkhCxO'
     }
 
 }

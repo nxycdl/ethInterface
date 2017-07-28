@@ -62,7 +62,7 @@ module.exports = function (self) {
             return data[0];
         },
         getQueueDetail: function*(db, qid) {
-            var sql = "SELECT * FROM queuedetail  where qid = ? order by id ";
+            var sql = "SELECT * FROM queuedetail  where qid = ? order by xid ";
             var data = yield db.query(sql, [qid]);
             return data[0];
         },

@@ -172,8 +172,8 @@ module.exports = function (root, kpath) {
         //每天08点02分发送一次;
         '*/10 * * * * *',
         function () {
-             co(cronService.autoBuss());
-             co(cronService.checBuss());
+             // co(cronService.autoBuss());
+             // co(cronService.checBuss());
         },
         false,
         "Asia/Shanghai"
@@ -183,8 +183,8 @@ module.exports = function (root, kpath) {
         //'0 10 21 * * *',
         '*/5 * * * * *',
         function () {
-            co(cronService.getTickers('sccny'));
-            co(cronService.getTickers('qtumcny'))
+            // co(cronService.getTickers('sccny'));
+            // co(cronService.getTickers('qtumcny'))
         },
         false,
         "Asia/Shanghai"

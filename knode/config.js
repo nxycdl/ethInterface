@@ -15,16 +15,12 @@ module.exports=function(root){
         //端口设置
         port:9000,
         //mysql设置
-<<<<<<< HEAD
-        mysql:{
-=======
        mysql:{
             host: '120.26.109.153',
             port: '3306',
             database: 'btc',
             user: 'btc',
             password: 'btc99999',
->>>>>>> 4e7177aa09093494e216b5069ded1a1b92535aae
             waitForConnections: true,
             connectionLimit: 20,
             supportBigNumbers: true,

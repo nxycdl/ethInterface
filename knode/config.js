@@ -15,8 +15,7 @@ module.exports=function(root){
         //端口设置
         port:9000,
         //mysql设置
-       mysql:{
-
+        mysql:{
             waitForConnections: true,
             connectionLimit: 20,
             supportBigNumbers: true,
@@ -27,7 +26,9 @@ module.exports=function(root){
         appSecret:"4536a35ce5418d49a7ecd300b01e98e4",
         expireTime:7200,
         weixinCacheToken:root+'/cacheFile/weixinCacheToken.json',
-        weixinJsApi_ticket:root+'/cacheFile/weixinJsApi_ticket.json'
+        weixinJsApi_ticket:root+'/cacheFile/weixinJsApi_ticket.json',
+        YUNBI_ACCESS_KEY : '5cxGSB4trxruisrlfpZxlmKwkDMRfAne9xDEe5JJ',
+        YUNBI_SECRET_KEY : 'xhmWD1Lr15FYFtrEqGO24lTv7D9KI0S2pXXkhCxO'
     }
 
 }

@@ -183,12 +183,8 @@ module.exports = function (root, kpath) {
         //'0 10 21 * * *',
         '*/5 * * * * *',
         function () {
-<<<<<<< HEAD
-            // co(cronService.getTickers('sccny'));
-            // co(cronService.getTickers('qtumcny'))
-=======
             co(cronService.getTickers('sccny'));
->>>>>>> 4e7177aa09093494e216b5069ded1a1b92535aae
+
         },
         false,
         "Asia/Shanghai"

@@ -40,7 +40,8 @@ module.exports = function (root, kpath) {
         formidable = require('formidable'),
         XMLWriter = require('xml-writer'),
         url = require('url'),
-        combo = require('koa-combo');
+        combo = require('koa-combo'),
+        moment = require('moment');
 
     // 声明成公共
     M.qr = qr;
@@ -54,6 +55,7 @@ module.exports = function (root, kpath) {
     M.root = root;
     M.XMLWriter = XMLWriter;
     M.url = url;
+    M.moment = moment;
 
     //===================获取配置内容
     var systemConfig = require(kpath + '/config')(root);
@@ -183,7 +185,7 @@ module.exports = function (root, kpath) {
         //'0 10 21 * * *',
         '*/5 * * * * *',
         function () {
-            co(cronService.getTickers('sccny'));
+            // co(cronService.getTickers('sccny'));
 
         },
         false,

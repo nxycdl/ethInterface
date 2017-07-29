@@ -43,7 +43,8 @@ module.exports = {
         this.body = yield this.render("yunbi/sccnydept");
     },
     sccnydeptQuery:function*(){
-        var url = "https://plugin.sosobtc.com/widgetembed/data/depth?symbol=yunbisccny";
+        //var url = "https://plugin.sosobtc.com/widgetembed/data/depth?symbol=yunbisccny";
+        var url = "https://yunbi.com//api/v2/depth.json?market=sccny";
         try {
             result = yield M.request({
                 uri: url,
@@ -55,6 +56,17 @@ module.exports = {
                 body: '[]'
             }
         }
-        this.body = result.body;
+        var data = JSON.parse(result.body);
+        data.currentTime = M.moment.unix(data.timestamp).format('MM-DD HH:mm:ss') ;
+        this.body = data;
+    },
+    schome:function*(){
+        this.body = yield this.render("yunbi/schome");
+    },
+    marketticker:function*() {
+        var options ={
+            market:this.query.market
+        }
+        this.body = yield this.render("yunbi/marketticker",options)
     }
 }

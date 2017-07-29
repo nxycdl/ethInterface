@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!-- 引入 ECharts 文件 -->
+    <script src="https://cdn.bootcss.com/echarts/3.6.2/echarts.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <!--<script src="https://cdn.bootcss.com/moment.js/2.18.1/locale/en-gb.js"></script>-->
+    <style>
+        input {
+            width: 120px;
+        }
+    </style>
+
+</head>
+<body>
+<!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+<div id="main" style="width: 100%;height:400px;"></div>
+<div id="info" style="width: 100%;height:80px;">
+    <ul>
+        <li id="content">
+            <div class="info">
+
+            </div>
+        </li>
+    </ul>
+</div>
+<script>
+    $(function () {
+            var myChart = echarts.init(document.getElementById('main'));
+            var market = '{{market}}';
+            console.log(market);
+            var currentTicker ={};
+            var tickerBuyList = [];
+            var tickerSellList = [];
+            var timeList =[];
+            function addInfo(at,ticker) {
+                var _div = document.createElement("div");
+                var sub = (ticker.sell - ticker.buy) ;
+                sub = sub.toFixed(8);
+                var info= "<label>at<input type='text' value='" + at+  "'></label>"
+                info = info + "<label>buy<input type='text' value='" + ticker.buy+  "'></label>" ;
+                info = info + "<label>sell<input type='text' value='" + ticker.sell+  "'></label>" ;
+                info = info + "<label style='color:red'>"+ sub+ "</label>"
+                info = info + "<label>low<input type='text' value='" + ticker.low+  "'></label>" ;
+                info = info + "<label>high<input type='text' value='" + ticker.high+  "'></label>" ;
+                info = info + "<label>last<input type='text' value='" + ticker.last+  "'></label>" ;
+                info = info + "<label>vol<input type='text' value='" + ticker.vol+  "'></label>" ;
+                _div.innerHTML = info;
+
+                $("#content").prepend(_div);
+
+            }
+            function doQuery() {
+                var url = 'https://yunbi.com//api/v2/tickers/'+market+'.json';
+                console.log(url);
+                $.ajax({
+                    url: url,
+                    success: function (data) {
+
+                        var at = data.at;
+                        at = new Date(parseInt(at) * 1000).toLocaleString();
+                        at = at.substr(10,20);
+                        console.log(at);
+                        addInfo(at,data.ticker);
+                        currentTicker = data;
+                        currentTicker.at = at;
+                        timeList.push(at);
+                        tickerBuyList.push(data.ticker.buy *1000);
+                        tickerSellList.push(data.ticker.sell*1000);
+                        option = {
+                            title : {
+                                text: '走势图',
+                                subtext: at
+                            },
+                            tooltip : {
+                                trigger: 'axis'
+                            },
+                            legend: {
+                                data:['卖','买']
+                            },
+                            toolbox: {
+                                show : true,
+                                feature : {
+                                    mark : {show: true},
+                                    dataView : {show: true, readOnly: false},
+                                    magicType : {show: true, type: ['line', 'bar']},
+                                    restore : {show: true},
+                                    saveAsImage : {show: true}
+                                }
+                            },
+                            calculable : true,
+                            xAxis : [
+                                {
+                                    type : 'category',
+                                    boundaryGap : false,
+                                    data : timeList
+                                }
+                            ],
+                            yAxis : [
+                                {
+                                    type : 'value',
+                                    axisLabel : {
+                                        formatter: '{value}'
+                                    }
+                                }
+                            ],
+                            series : [
+                                {
+                                    name:'卖',
+                                    type:'line',
+                                    data:tickerBuyList,
+                                    markPoint : {
+                                        symbolSize:100,
+                                        data : [
+                                            {type : 'max', name: '最大值'},
+                                            {type : 'min', name: '最小值'}
+                                        ]
+                                    },
+                                    markLine : {
+                                        data : [
+                                            {type : 'average', name: '平均值'}
+                                        ]
+                                    }
+                                },
+                                {
+                                    name:'买',
+                                    type:'line',
+                                    data:tickerSellList,
+                                    markPoint : {
+                                        symbolSize:100,
+                                        data : [
+                                            {type : 'max', name: '最大值'},
+                                            {type : 'min', name: '最小值'}
+                                        ]
+                                    },
+                                    markLine : {
+                                        data : [
+                                            {type : 'average', name: '平均值'}
+                                        ]
+                                    }
+                                }
+                            ]
+                        };
+                        myChart.setOption(option);
+
+                    },
+                    error:function(data){
+                        console.log(data);
+                    }
+                });
+
+            }
+
+            setInterval(function () {
+                doQuery();
+            }, 2000);
+        }
+    );
+</script>
+
+</body>
+</html>

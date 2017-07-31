@@ -12,5 +12,6 @@ module.exports = function (root) {
         webservice: require(root + '/function/webservice'),
         sign: require(root + '/function/sign'),
         signYunbi: require(root + '/function/signYunbi'),
+        biz: require(root + '/function/returnout'),
     }
 }

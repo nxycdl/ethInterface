@@ -61,6 +61,9 @@ module.exports = function (root, kpath) {
     var systemConfig = require(kpath + '/config')(root);
     C = systemConfig;
 
+    //==================获取自定义配置内容:
+    C.myConfig = require(kpath + '/MyConfig')(root);
+
     //===================缓存配置
     C.debug = {};
     C.debug.common = false; //全局debug
@@ -174,8 +177,8 @@ module.exports = function (root, kpath) {
         //每天08点02分发送一次;
         '*/10 * * * * *',
         function () {
-             // co(cronService.autoBuss());
-             // co(cronService.checBuss());
+            // co(cronService.autoBuss());
+            // co(cronService.checBuss());
         },
         false,
         "Asia/Shanghai"
@@ -186,6 +189,8 @@ module.exports = function (root, kpath) {
         '*/5 * * * * *',
         function () {
             // co(cronService.getTickers('sccny'));
+            co(cronService.getAllTickers('YUNBI', 'btc'))
+            co(cronService.getAllTickers('OKCOIN', 'btc'))
 
         },
         false,

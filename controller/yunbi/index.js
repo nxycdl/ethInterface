@@ -1,6 +1,7 @@
 /**
  * Created by dl on 2017-05-25.
  */
+
 module.exports = {
     _extend: {
         yunbiService: require(C.service + 'yunbi/yunbiService'),
@@ -68,5 +69,6 @@ module.exports = {
             market:this.query.market
         }
         this.body = yield this.render("yunbi/marketticker",options)
-    }
+    },
+
 }

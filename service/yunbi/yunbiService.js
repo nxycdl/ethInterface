@@ -93,6 +93,33 @@ module.exports = function (self) {
             var data = yield db.query(sql, [status, id]);
             return data[0];
 
+        },
+        getTickers:function*(market){
+            console.log('xxxxxx');
+            var url = 'https://yunbi.com//api/v2/tickers/' + market + '.json';
+            var result = {
+                body: '[]'
+            }
+            console.log('start get tickers \t\t' + new Date());
+            try {
+                result = yield M.request({
+                    uri: url,
+                    method: 'get'
+                });
+            } catch (e) {
+                console.log(e);
+                result = {
+                    body: '[]'
+                }
+                return _.biz.outjson('-1',e,[]);
+            }
+            console.log('end get tickers \t\t' + new Date());
+            if (result.body.length == 0) {
+                return _.biz.outjson('0000','',[]);
+            }
+            result = JSON.parse(result.body);
+            result.date = result.at;
+            return _.biz.outjson('0000','',result);
         }
     }
 }

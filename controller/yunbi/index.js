@@ -5,7 +5,8 @@
 module.exports = {
     _extend: {
         yunbiService: require(C.service + 'yunbi/yunbiService'),
-        wxUtils: require(C.service + 'weixin/wxUtils')
+        wxUtils: require(C.service + 'weixin/wxUtils'),
+        tickService: require(C.service + 'yunbi/tickService')
     },
     index: function*() {
         this.body = yield this.render("yunbi/index");
@@ -43,7 +44,7 @@ module.exports = {
     sccnydept: function*() {
         this.body = yield this.render("yunbi/sccnydept");
     },
-    sccnydeptQuery:function*(){
+    sccnydeptQuery: function*() {
         //var url = "https://plugin.sosobtc.com/widgetembed/data/depth?symbol=yunbisccny";
         var url = "https://yunbi.com//api/v2/depth.json?market=sccny";
         try {
@@ -58,17 +59,38 @@ module.exports = {
             }
         }
         var data = JSON.parse(result.body);
-        data.currentTime = M.moment.unix(data.timestamp).format('MM-DD HH:mm:ss') ;
+        data.currentTime = M.moment.unix(data.timestamp).format('MM-DD HH:mm:ss');
         this.body = data;
     },
-    schome:function*(){
+    schome: function*() {
         this.body = yield this.render("yunbi/schome");
     },
-    marketticker:function*() {
-        var options ={
-            market:this.query.market
+    marketticker: function*() {
+        var options = {
+            market: this.query.market
         }
-        this.body = yield this.render("yunbi/marketticker",options)
+        this.body = yield this.render("yunbi/marketticker", options)
     },
+    currencydiff: function*() {
+        var option = {
+            market: this.query.market
+        }
+
+        this.body = yield this.render("yunbi/currencydiff")
+    },
+    getTickers: function*() {
+        console.log(this.query);
+        this.body = yield this.tickService.getAllTickers(this.query.exchange, this.query.market);
+    },
+    getLTBTickersDiff: function*() {
+        var options = {market: 'ltc'};
+        this.body = yield  this.render("yunbi/currencydiff", options);
+    },
+    getLTBTickers: function*() {
+        console.log(this.query);
+        var chbtc_ltb = yield this.tickService.getAllTickers('CHBTC', 'ltc');
+        var okCoin_ltb = yield  this.tickService.getAllTickers('OKCOIN', 'ltc');
+        this.body = {'OKCOIN': okCoin_ltb, 'CHBTC': chbtc_ltb};
+    }
 
 }

@@ -9,7 +9,7 @@ module.exports = {
             outdata.push(data);
         }
         bizData.code = code;
-        bizData.data = data;
+        bizData.data = outdata;
         if (_.isUndefined(err))
             bizData.err = "";
         else

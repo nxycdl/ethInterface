@@ -3,7 +3,7 @@
  */
 module.exports = function (root) {
     return {
-        exchangeList: ['YUNBI', 'OKCOIN'],
+        exchangeList: ['YUNBI', 'OKCOIN','CHBTC','HUOBI'],
         marketList: ['sc','btc','ltc','eth'],
     }
 

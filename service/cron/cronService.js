@@ -4,6 +4,9 @@
 var wxUtils = require(C.service + 'weixin/wxUtils')();
 var yunbiService = require(C.service + 'yunbi/yunbiService')();
 var okCoinService = require(C.service + 'yunbi/okCoinService')();
+var chBtcService = require(C.service + 'yunbi/chBtcService')();
+var huobiService = require(C.service + 'yunbi/huobiService')();
+var tickService = require(C.service + 'yunbi/tickService')();
 
 
 module.exports = {
@@ -266,21 +269,8 @@ module.exports = {
 
     },
     getAllTickers: function*(exchange, market) {
-        var exchangeIndex = _.indexOf(C.myConfig.exchangeList, exchange);
-        var marketIndex = _.indexOf(C.myConfig.marketList, market);
-        var outdata = {};
-        //查询不到抛出异常;
-        console.error(exchangeIndex,marketIndex,C.myConfig.exchangeList,exchange);
-        if (exchangeIndex == -1 || marketIndex == -1)
-            return _.biz.outjson('-1', '非法的入参', [])
-        if (exchange === 'YUNBI') {
-            market = market + 'cny';
-            outdata = yield yunbiService.getTickers(market);
-        }else if (exchange =='OKCOIN'){
-            market = market +'_cny';
-            outdata = yield okCoinService.getTickers(market);
-        }
-        console.log(exchange, outdata);
-
+        var data = yield tickService.getAllTickers(exchange, market);
+        console.log(data);
+        return data;
     }
 }

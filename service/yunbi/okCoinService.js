@@ -4,6 +4,7 @@
 module.exports = function (self) {
     return {
         getTickers:function*(market){
+            market = market +'_cny';
             var url = 'https://www.okcoin.cn/api/v1/ticker.do?symbol='+market;
             // var url = 'https://yunbi.com//api/v2/tickers/' + market + '.json';
             var result = {

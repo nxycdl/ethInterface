@@ -189,8 +189,10 @@ module.exports = function (root, kpath) {
         '*/5 * * * * *',
         function () {
             // co(cronService.getTickers('sccny'));
-            co(cronService.getAllTickers('YUNBI', 'btc'))
+            /*co(cronService.getAllTickers('YUNBI', 'btc'))
             co(cronService.getAllTickers('OKCOIN', 'btc'))
+            co(cronService.getAllTickers('CHBTC', 'btc'))
+            co(cronService.getAllTickers('HUOBI', 'btc'))*/
 
         },
         false,

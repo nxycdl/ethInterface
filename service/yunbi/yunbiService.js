@@ -95,6 +95,7 @@ module.exports = function (self) {
 
         },
         getTickers:function*(market){
+            market = market +'cny';
             console.log('xxxxxx');
             var url = 'https://yunbi.com//api/v2/tickers/' + market + '.json';
             var result = {

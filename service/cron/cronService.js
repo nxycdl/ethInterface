@@ -277,6 +277,8 @@ module.exports = {
     startRequestEthPool: function *() {
         //每小时最大的发送次数;
         var maxSendCountHour = 2;
+        //等待15分钟如果还收不到数据认为死机了;
+        var maxWaitTime = 15 ;
         var data = yield netpullService.startRequestEthPool();
         if (data.code != '0000') return;
         var data = data.data[0];
@@ -286,8 +288,8 @@ module.exports = {
 
             if (info.currentData == 0) {
                 underLine.push(info.name);
-            } else if (Number(info.lasttime) >= 10) {
-                //如果10分钟没有收到客户端消息也任务死机了;
+            } else if (Number(info.lasttime) >= maxWaitTime) {
+                //如果15分钟没有收到客户端消息也任务死机了;
                 underLine.push(info.name);
                 info.currentData = 0;
             }
@@ -368,6 +370,8 @@ module.exports = {
     },
     startRequestEthPoolHour: function *() {
         var data = yield netpullService.startRequestEthPool();
+        //等待15分钟如果还收不到数据认为死机了;
+        var maxWaitTime = 15 ;
         if (data.code != '0000') return;
         var data = data.data[0];
         var max = 0;
@@ -376,7 +380,7 @@ module.exports = {
 
             if (info.currentData == 0) {
                 underLine.push(info.name);
-            } else if (Number(info.lasttime) >= 10) {
+            } else if (Number(info.lasttime) >= maxWaitTime) {
                 //如果10分钟没有收到客户端消息也任务死机了;
                 underLine.push(info.name);
                 info.currentData = 0;

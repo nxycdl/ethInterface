@@ -375,6 +375,7 @@ module.exports = {
         });
         var max = (max / 1000).toFixed(2) + 'G';
         console.log('当前在线' + data.length + '合计:' + max);
+
         if (C.isaliSms == false) return;
         var _list = '0';
         if (underLine.length > 0) {
@@ -387,6 +388,11 @@ module.exports = {
             count: data.length,
             max: max,
             list: _list
+        }
+        var _hour = M.moment().format('HH');
+        if (_hour > 0 && _hour <6){
+            //半夜不发消息;
+            return ;
         }
         console.log(params);
         const accessKeyId = C.alismsaccessKeyId;

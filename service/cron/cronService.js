@@ -393,7 +393,7 @@ module.exports = {
         const secretAccessKey = C.alismssecretAccessKey;
         var smsClient = new _.aliSMSClient({accessKeyId, secretAccessKey});
         console.log('发送每小时短信！');
-        /*smsClient.sendSMS({
+        smsClient.sendSMS({
          PhoneNumbers: '13895652926,13895671864',
          SignName: '码农',
          TemplateCode: 'SMS_80975015',
@@ -406,7 +406,7 @@ module.exports = {
          }
          }, function (err) {
          console.log(err)
-         })*/
+         })
 
 
     }

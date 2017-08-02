@@ -40,6 +40,9 @@ module.exports = function (self) {
                     var computer = {}
                     computer.name = line[0].substr(0, 3);
                     computer.currentData = line[0].substr(3, (line[0].length));
+                    if (_.isEmpty(computer.currentData)){
+                        computer.currentData = 0 ;
+                    }
                     computer.time = (line[5].split(')')[1]) + '分钟';
                     computer.lasttime = (line[5].split(')')[1]);
                     if (computer.name != 'Def')

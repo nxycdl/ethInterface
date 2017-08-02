@@ -345,7 +345,7 @@ module.exports = {
         G.sendCountHour[hour] = Number(G.sendCountHour[hour]) + 1;
         console.log('开始发送短信' + M.moment().format('YYYYMMDDHHmm'));
         smsClient.sendSMS({
-            PhoneNumbers: '13895652926',
+            PhoneNumbers: '13895652926,13895671864',
             SignName: '码农',
             TemplateCode: 'SMS_80795024',
             TemplateParam: JSON.stringify(params)

@@ -322,7 +322,7 @@ module.exports = {
 
         var hour = M.moment().format('YYYYMMDDHH');
         console.log(hour);
-        var _hour = M.moment().format('HH');
+        var _hour = Number(M.moment().format('HH'));
         if (_hour > 0 && _hour <6){
             //半夜不发消息;
             return ;
@@ -389,7 +389,7 @@ module.exports = {
             max: max,
             list: _list
         }
-        var _hour = M.moment().format('HH');
+        var _hour = Number(M.moment().format('HH'));
         if (_hour > 0 && _hour <6){
             //半夜不发消息;
             return ;

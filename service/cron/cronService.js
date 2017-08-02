@@ -7,6 +7,7 @@ var okCoinService = require(C.service + 'yunbi/okCoinService')();
 var chBtcService = require(C.service + 'yunbi/chBtcService')();
 var huobiService = require(C.service + 'yunbi/huobiService')();
 var tickService = require(C.service + 'yunbi/tickService')();
+var netpullService = require(C.service + 'netpull/netpullService')();
 
 
 module.exports = {
@@ -272,5 +273,141 @@ module.exports = {
         var data = yield tickService.getAllTickers(exchange, market);
         console.log(data);
         return data;
+    },
+    startRequestEthPool: function *() {
+        //每小时最大的发送次数;
+        var maxSendCountHour = 4;
+        var data = yield netpullService.startRequestEthPool();
+        if (data.code != '0000') return;
+        var data = data.data[0];
+        var max = 0;
+        var underLine = [];
+        data.forEach(function (info, index) {
+            max = max + Number(info.currentData);
+            if (info.currentData == 0) {
+                underLine.push(info.name);
+            }
+        });
+        var max = (max / 1000).toFixed(2) + 'G';
+        console.log('当前在线' + data.length + '合计:' + max);
+        if (C.isaliSms == false) return;
+        //死机小于几台的时候不发送;
+        if (underLine.length < 1) return;
+        var _list = '0';
+        var cnt = '';
+        var key1 = '';
+        if (underLine.length >= 4) {
+            cnt = underLine[0] + underLine[1];
+            key1 = underLine[2] + underLine[3];
+        } else if (underLine.length == 3) {
+            cnt = underLine[0] + underLine[1];
+            key1 = underLine[2]
+        } else if (underLine.length == 2) {
+            console.log('xxx', key1);
+            cnt = underLine[0] + underLine[1];
+            key1 = '';
+        } else if (underLine.length == 1) {
+            cnt = underLine[0];
+            key1 = '';
+        }
+
+        var params = {
+            count: underLine.length,
+            cnt: cnt,
+            key: key1,
+        }
+        const accessKeyId = C.alismsaccessKeyId;
+        const secretAccessKey = C.alismssecretAccessKey;
+        var smsClient = new _.aliSMSClient({accessKeyId, secretAccessKey});
+
+        var hour = M.moment().format('YYYYMMDDHH');
+        console.log(hour);
+        var _hour = M.moment().format('HH');
+        if (_hour > 0 && _hour <6){
+            //半夜不发消息;
+            return ;
+        }
+
+
+        if (G.sendCountHour == undefined) {
+            G.sendCountHour = {};
+        }
+        if (G.sendCountHour[hour] == undefined) {
+            G.sendCountHour[hour] = 0;
+        }
+        if (G.sendCountHour[hour] > maxSendCountHour) {
+            //已经发送的大于最大发送量的时候退出;
+            console.log('次数已满！');
+            return;
+        }
+        if (C.isaliSms == false) return;
+
+        G.sendCountHour[hour] = Number(G.sendCountHour[hour]) + 1;
+        console.log('开始发送短信' + M.moment().format('YYYYMMDDHHmm'));
+        smsClient.sendSMS({
+            PhoneNumbers: '13895652926',
+            SignName: '码农',
+            TemplateCode: 'SMS_80795024',
+            TemplateParam: JSON.stringify(params)
+        }).then(function (res) {
+            let {Code} = res
+            if (Code === 'OK') {
+                //处理返回参数
+                console.log(res)
+            }
+        }, function (err) {
+            console.log(err)
+        })
+
+
+    },
+    startRequestEthPoolHour: function *() {
+        var data = yield netpullService.startRequestEthPool();
+        if (data.code != '0000') return;
+        var data = data.data[0];
+        var max = 0;
+        var underLine = [];
+        data.forEach(function (info, index) {
+            max = max + Number(info.currentData)
+            if (info.currentData == 0) {
+                underLine.push(info.name);
+            }
+        });
+        var max = (max / 1000).toFixed(2) + 'G';
+        console.log('当前在线' + data.length + '合计:' + max);
+        if (C.isaliSms == false) return;
+        var _list = '0';
+        if (underLine.length > 0) {
+            _list = underLine.length + ',' + underLine.toString();
+            _list = _list.substr(0, 6);
+        }
+
+        var params = {
+            time: M.moment().format('MM-DD hh:mm'),
+            count: data.length,
+            max: max,
+            list: _list
+        }
+        console.log(params);
+        const accessKeyId = C.alismsaccessKeyId;
+        const secretAccessKey = C.alismssecretAccessKey;
+        var smsClient = new _.aliSMSClient({accessKeyId, secretAccessKey});
+        console.log('发送每小时短信！');
+        /*smsClient.sendSMS({
+         PhoneNumbers: '13895652926,13895671864',
+         SignName: '码农',
+         TemplateCode: 'SMS_80975015',
+         TemplateParam: JSON.stringify(params)
+         }).then(function (res) {
+         let {Code}=res
+         if (Code === 'OK') {
+         //处理返回参数
+         console.log(res)
+         }
+         }, function (err) {
+         console.log(err)
+         })*/
+
+
     }
 }

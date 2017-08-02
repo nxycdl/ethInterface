@@ -10,4 +10,27 @@ var d = new Date();
 console.log(d.getHours() + ':'+ d.getMinutes() + ':' +d.getSeconds());
 var a=[1,2,3,4,5,6];
 a.shift();
-console.log(a);
+a = []
+var underLine=[];
+
+console.log(underLine);
+var cnt = '';
+var key1 = '';
+console.log('xxx',underLine.length);
+if (underLine.length >= 4){
+    cnt = underLine[0] + underLine[1];
+    key1 = underLine[2] + underLine[3];
+}else if (underLine.length == 3){
+    cnt = underLine[0] + underLine[1];
+    key1 = underLine[2]
+}else if(underLine.length == 2){
+    console.log('xxx',key1);
+    cnt = underLine[0] + underLine[1];
+    key1 = '';
+}else if(underLine.length == 1){
+    cnt = underLine[0] ;
+    key1 = '';
+};
+console.log(cnt)
+console.log(key1)
+

@@ -33,7 +33,10 @@ module.exports=function(root){
         weixinCacheToken:root+'/cacheFile/weixinCacheToken.json',
         weixinJsApi_ticket:root+'/cacheFile/weixinJsApi_ticket.json',
         YUNBI_ACCESS_KEY : '5cxGSB4trxruisrlfpZxlmKwkDMRfAne9xDEe5JJ',
-        YUNBI_SECRET_KEY : 'xhmWD1Lr15FYFtrEqGO24lTv7D9KI0S2pXXkhCxO'
+        YUNBI_SECRET_KEY : 'xhmWD1Lr15FYFtrEqGO24lTv7D9KI0S2pXXkhCxO',
+        alismsaccessKeyId : 'LTAIzzAzb8GLyeCk',
+        alismssecretAccessKey : 'QK3ZIFWNNQ0bX8ZFUFAzkvQ11XugFU',
+        isaliSms:true
     }
 
 }

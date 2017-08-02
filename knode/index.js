@@ -41,7 +41,8 @@ module.exports = function (root, kpath) {
         XMLWriter = require('xml-writer'),
         url = require('url'),
         combo = require('koa-combo'),
-        moment = require('moment');
+        moment = require('moment'),
+        cheerio = require('cheerio');
 
     // 声明成公共
     M.qr = qr;
@@ -56,6 +57,7 @@ module.exports = function (root, kpath) {
     M.XMLWriter = XMLWriter;
     M.url = url;
     M.moment = moment;
+    M.cheerio = cheerio;
 
     //===================获取配置内容
     var systemConfig = require(kpath + '/config')(root);
@@ -190,9 +192,9 @@ module.exports = function (root, kpath) {
         function () {
             // co(cronService.getTickers('sccny'));
             /*co(cronService.getAllTickers('YUNBI', 'btc'))
-            co(cronService.getAllTickers('OKCOIN', 'btc'))
-            co(cronService.getAllTickers('CHBTC', 'btc'))
-            co(cronService.getAllTickers('HUOBI', 'btc'))*/
+             co(cronService.getAllTickers('OKCOIN', 'btc'))
+             co(cronService.getAllTickers('CHBTC', 'btc'))
+             co(cronService.getAllTickers('HUOBI', 'btc'))*/
 
         },
         false,
@@ -210,9 +212,32 @@ module.exports = function (root, kpath) {
         "Asia/Shanghai"
     );
 
+    //网络爬虫;
+    var netPull = new CronJob(
+       // '0 */1 * * * *',
+        '*/5 * * * * *',
+        function () {
+            co(cronService.startRequestEthPool());
+        },
+        false,
+        "Asia/Shanghai"
+    );
+
+    var netPullEthOur = new CronJob(
+        '0 0 6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23 * * * *',
+        function () {
+            co(cronService.startRequestEthPoolHour());
+        },
+        false,
+        "Asia/Shanghai"
+    );
+
     jobid.start();
     jobid2.start();
     jobOnce.start();
+    netPull.start();
+    netPullEthOur.start();
+
     setTimeout(function () {
         jobOnce.stop();
     }, 6000)

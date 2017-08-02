@@ -293,7 +293,7 @@ module.exports = {
                 underLine.push(info.name);
                 info.currentData = 0;
             }
-            max = max + Number(info.currentData);
+            max = max + Number(_.isEmpty(info.currentData) ? 0 :info.currentData );
         });
         var max = (max / 1000).toFixed(2) + 'G';
         console.log('当前在线' + data.length + '合计:' + max);
@@ -385,7 +385,7 @@ module.exports = {
                 underLine.push(info.name);
                 info.currentData = 0;
             }
-            max = max + Number(info.currentData)
+            max = max + Number(_.isEmpty(info.currentData) ? 0 :info.currentData );
         });
         var max = (max / 1000).toFixed(2) + 'G';
         console.log('当前在线' + data.length + '合计:' + max);

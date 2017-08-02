@@ -276,17 +276,22 @@ module.exports = {
     },
     startRequestEthPool: function *() {
         //每小时最大的发送次数;
-        var maxSendCountHour = 4;
+        var maxSendCountHour = 2;
         var data = yield netpullService.startRequestEthPool();
         if (data.code != '0000') return;
         var data = data.data[0];
         var max = 0;
         var underLine = [];
         data.forEach(function (info, index) {
-            max = max + Number(info.currentData);
+
             if (info.currentData == 0) {
                 underLine.push(info.name);
+            } else if (Number(info.lasttime) >= 10) {
+                //如果10分钟没有收到客户端消息也任务死机了;
+                underLine.push(info.name);
+                info.currentData = 0;
             }
+            max = max + Number(info.currentData);
         });
         var max = (max / 1000).toFixed(2) + 'G';
         console.log('当前在线' + data.length + '合计:' + max);
@@ -323,9 +328,9 @@ module.exports = {
         var hour = M.moment().format('YYYYMMDDHH');
         console.log(hour);
         var _hour = Number(M.moment().format('HH'));
-        if (_hour > 0 && _hour <6){
+        if (_hour > 0 && _hour < 6) {
             //半夜不发消息;
-            return ;
+            return;
         }
 
 
@@ -368,10 +373,15 @@ module.exports = {
         var max = 0;
         var underLine = [];
         data.forEach(function (info, index) {
-            max = max + Number(info.currentData)
+
             if (info.currentData == 0) {
                 underLine.push(info.name);
+            } else if (Number(info.lasttime) >= 10) {
+                //如果10分钟没有收到客户端消息也任务死机了;
+                underLine.push(info.name);
+                info.currentData = 0;
             }
+            max = max + Number(info.currentData)
         });
         var max = (max / 1000).toFixed(2) + 'G';
         console.log('当前在线' + data.length + '合计:' + max);
@@ -390,9 +400,9 @@ module.exports = {
             list: _list
         }
         var _hour = Number(M.moment().format('HH'));
-        if (_hour > 0 && _hour <6){
+        if (_hour > 0 && _hour < 6) {
             //半夜不发消息;
-            return ;
+            return;
         }
         console.log(params);
         const accessKeyId = C.alismsaccessKeyId;
@@ -400,19 +410,19 @@ module.exports = {
         var smsClient = new _.aliSMSClient({accessKeyId, secretAccessKey});
         console.log('发送每小时短信！');
         smsClient.sendSMS({
-         PhoneNumbers: '13895652926,13895671864',
-         SignName: '码农',
-         TemplateCode: 'SMS_80975015',
-         TemplateParam: JSON.stringify(params)
-         }).then(function (res) {
-         let {Code}=res
-         if (Code === 'OK') {
-         //处理返回参数
-         console.log(res)
-         }
-         }, function (err) {
-         console.log(err)
-         })
+            PhoneNumbers: '13895652926,13895671864',
+            SignName: '码农',
+            TemplateCode: 'SMS_80975015',
+            TemplateParam: JSON.stringify(params)
+        }).then(function (res) {
+            let {Code} = res
+            if (Code === 'OK') {
+                //处理返回参数
+                console.log(res)
+            }
+        }, function (err) {
+            console.log(err)
+        })
 
 
     }

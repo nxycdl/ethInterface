@@ -41,6 +41,7 @@ module.exports = function (self) {
                     computer.name = line[0].substr(0, 3);
                     computer.currentData = line[0].substr(3, (line[0].length));
                     computer.time = (line[5].split(')')[1]) + '分钟';
+                    computer.lasttime = (line[5].split(')')[1]);
                     if (computer.name != 'Def')
                         infoList.push(computer);
                 }

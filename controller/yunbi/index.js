@@ -95,6 +95,7 @@ module.exports = {
     },
     getSosoBtcHomePage:function*() {
         var data = yield  this.sosobtcService.getSosoBtcHomePage();
+        this.body= data;
     }
 
 }

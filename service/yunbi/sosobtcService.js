@@ -6,6 +6,46 @@
  */
 module.exports = function(self){
     return {
+        getSosoBtcHomePage33:function *() {
+            /**
+             * 爬取SOSOBTC主页;
+             * @type {string}
+             */
+            var url = 'https://www.sosobtc.com/';
+            var result = {
+                body: '[]'
+            }
+            try {
+                result = yield M.request({
+                    uri: url,
+                    method: 'get'
+                });
+            } catch (e) {
+                console.error(e);
+                result = {
+                    body: '[]'
+                }
+                return '';
+            }
+            console.log(result.body);
+            var $ = M.cheerio.load(result.body); //采用cheerio模块解析html
+            //var _table = $('div .tab-content .tab-content >div tbody tr').html();
+            var _table = $('div .tab-content .tab-content >div tbody tr').each(function(i, elem) {
+                console.log(i);
+                if (i ==0){
+                    console.log("xxxxxxxxxxx");
+                    console.log($(this).children().first().text());
+                    console.log($(this).children().first().next().text());
+                    //$(this).children()[1].text();
+                    $(this).children().each(function(j,e){
+                        console.log($(e).text());
+                    });
+                    console.log("xxxxxxxxxx111x");
+                }
+
+            });
+
+        },
         getSosoBtcHomePage2:function *() {
             /**
              * 爬取SOSOBTC主页;
@@ -27,9 +67,20 @@ module.exports = function(self){
                 }
                 return '';
             }
+            console.log('请求结束')
             var $ = M.cheerio.load(result.body); //采用cheerio模块解析html
             //var _table = $('div .tab-content .tab-content >div tbody tr').html();
-            var _table = $('div .tab-content .tab-content >div tbody tr').each(function(i, elem) {
+            var _poloniexInfo = $('div #default_market_tabs-tab-poloniex');
+            var _a = _poloniexInfo.parent();
+
+            _poloniexInfo.parent().addClass('active');
+            console.log(_a);
+            console.log("************************************");
+            console.log(_a.children().children());
+
+
+
+            /*var _table = $('div .tab-content .tab-content >div tbody tr').each(function(i, elem) {
                 console.log(i);
                 if (i ==0){
                     console.log("xxxxxxxxxxx");
@@ -42,15 +93,13 @@ module.exports = function(self){
                     console.log("xxxxxxxxxx111x");
                 }
 
-            });
+            });*/
+            console.log('aaa',$('div #default_market_tabs-pane-poloniex').text());
+
 
         },
-        getSosoBtcHomePage:function *() {
-            /**
-             * 爬取SOSOBTC主页;
-             * @type {string}
-             */
-            var url = 'https://www.sosobtc.com/';
+        getChbtcLtbFromSoso:function*(){
+            url ="https://k.sosobtc.com/ltc_cnbtc.html";
             var result = {
                 body: '[]'
             }
@@ -66,23 +115,35 @@ module.exports = function(self){
                 }
                 return '';
             }
-            var $ = M.cheerio.load(result.body); //采用cheerio模块解析html
-            //var _table = $('div .tab-content .tab-content >div tbody tr').html();
-            var _table = $('div .tab-content .tab-content >div tbody tr').each(function(i, elem) {
-                console.log(i);
-                if (i ==0){
-                    console.log("xxxxxxxxxxx");
-                    console.log($(this).children().first().text());
-                    console.log($(this).children().first().next().text());
-                    //$(this).children()[1].text();
-                    $(this).children().each(function(j,e){
-                        console.log($(e).text());
-                    });
-                    console.log("xxxxxxxxxx111x");
+            console.log(result.body);
+        },
+        getSosoBtcHomePage:function*(){
+            //获取bids的第一个有也可以;
+            //https://k.sosobtc.com/data/depth?symbol=cnbtcltccny
+            url="https://k.sosobtc.com/data/depth?symbol=cnbtcbtscny";
+            url ="https://k.sosobtc.com/btc_cnbtc.html";
+
+
+            var result = {
+                body: '[]'
+            }
+            try {
+                result = yield M.request({
+                    uri: url,
+                    method: 'get'
+                });
+            } catch (e) {
+                console.error(e);
+                result = {
+                    body: '[]'
                 }
-
-            });
-
+                return '';
+            }
+            //console.log(result.body);
+            var $ = M.cheerio.load(result.body); //采用cheerio模块解析html
+            console.log($('div #price').text());
+            return $('div #price').text() ;
         }
+
     }
 }

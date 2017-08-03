@@ -365,7 +365,7 @@ module.exports = {
         G.sendCountHour[_tmp] = G.sendCountHour[_tmp] + 1;
         console.log('开始发送短信' + M.moment().format('YYYYMMDDHHmm'));
         console.log(JSON.stringify(params));
-        /*smsClient.sendSMS({
+        smsClient.sendSMS({
             PhoneNumbers: '13099590292,13895671864',
             SignName: '码农',
             TemplateCode: 'SMS_81495007',
@@ -378,7 +378,7 @@ module.exports = {
             }
         }, function (err) {
             console.log(err)
-        })*/
+        })
 
 
     },

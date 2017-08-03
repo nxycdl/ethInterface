@@ -6,7 +6,8 @@ module.exports = {
     _extend: {
         yunbiService: require(C.service + 'yunbi/yunbiService'),
         wxUtils: require(C.service + 'weixin/wxUtils'),
-        tickService: require(C.service + 'yunbi/tickService')
+        tickService: require(C.service + 'yunbi/tickService'),
+        sosobtcService:require(C.service + 'yunbi/sosobtcService'),
     },
     index: function*() {
         this.body = yield this.render("yunbi/index");
@@ -91,6 +92,9 @@ module.exports = {
         var chbtc_ltb = yield this.tickService.getAllTickers('CHBTC', 'ltc');
         var okCoin_ltb = yield  this.tickService.getAllTickers('OKCOIN', 'ltc');
         this.body = {'OKCOIN': okCoin_ltb, 'CHBTC': chbtc_ltb};
+    },
+    getSosoBtcHomePage:function*() {
+        var data = yield  this.sosobtcService.getSosoBtcHomePage();
     }
 
 }

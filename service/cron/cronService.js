@@ -302,7 +302,7 @@ module.exports = {
         if (underLine.length < 1) return;
         var _list = '0';
         var cnt = '';
-        var key1 = '';
+        var key1 = '0';
         if (underLine.length >= 4) {
             cnt = underLine[0] + underLine[1];
             key1 = underLine[2] + underLine[3];
@@ -310,15 +310,15 @@ module.exports = {
             cnt = underLine[0] + underLine[1];
             key1 = underLine[2]
         } else if (underLine.length == 2) {
-            console.log('xxx', key1);
             cnt = underLine[0] + underLine[1];
             key1 = '';
         } else if (underLine.length == 1) {
             cnt = underLine[0];
-            key1 = '';
+            key1 = '0';
         }
 
         var params = {
+            time: M.moment().format('MM-DD hh:mm'),
             count: underLine.length,
             cnt: cnt,
             key: key1,
@@ -328,8 +328,9 @@ module.exports = {
         var smsClient = new _.aliSMSClient({accessKeyId, secretAccessKey});
 
         var hour = M.moment().format('YYYYMMDDHH');
-        console.log(hour);
+
         var _hour = Number(M.moment().format('HH'));
+        if (C.isaliSms == false) return;
         if (_hour > 0 && _hour < 6) {
             //半夜不发消息;
             return;
@@ -342,19 +343,32 @@ module.exports = {
         if (G.sendCountHour[hour] == undefined) {
             G.sendCountHour[hour] = 0;
         }
+
         if (G.sendCountHour[hour] > maxSendCountHour) {
             //已经发送的大于最大发送量的时候退出;
             console.log('次数已满！');
             return;
         }
-        if (C.isaliSms == false) return;
+
+        var _tmp = hour + '_' + cnt +'_'+ key1;
+        if (G.sendCountHour[_tmp] == undefined) {
+            G.sendCountHour[_tmp] = 0;
+        }
+
+        console.log(G.sendCountHour);
+        if (G.sendCountHour[_tmp] >= 1) {
+            console.log('相同消息已经重复发送过了!');
+            return;
+        }
 
         G.sendCountHour[hour] = Number(G.sendCountHour[hour]) + 1;
+        G.sendCountHour[_tmp] = G.sendCountHour[_tmp] + 1;
         console.log('开始发送短信' + M.moment().format('YYYYMMDDHHmm'));
-        smsClient.sendSMS({
-            PhoneNumbers: '13895652926,13895671864',
+        console.log(JSON.stringify(params));
+        /*smsClient.sendSMS({
+            PhoneNumbers: '13099590292,13895671864',
             SignName: '码农',
-            TemplateCode: 'SMS_80795024',
+            TemplateCode: 'SMS_81495007',
             TemplateParam: JSON.stringify(params)
         }).then(function (res) {
             let {Code} = res
@@ -364,7 +378,7 @@ module.exports = {
             }
         }, function (err) {
             console.log(err)
-        })
+        })*/
 
 
     },

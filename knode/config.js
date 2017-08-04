@@ -13,7 +13,7 @@ module.exports=function(root){
         maxAge: 259200000,
         secret:'*&$^*&(*&$%@#@#$@!#$@%((()*()^#$%$#%@#$%@#$%$#',
         //端口设置
-        port:9000,
+        port:7001,
         //mysql设置
        mysql:{
             host: '120.26.109.153',

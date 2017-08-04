@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!-- 引入 ECharts 文件 -->
+    <script src="https://cdn.bootcss.com/echarts/3.6.2/echarts.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <!--<script src="https://cdn.bootcss.com/moment.js/2.18.1/locale/en-gb.js"></script>-->
+    <title>ChBTC -P</title>
+    <style>
+        input {
+            width: 120px;
+        }
+        .info {
+            display: flex;
+        }
+        .fl{
+
+        }
+        .fr{
+
+        }
+        .mid{
+
+        }
+
+    </style>
+
+</head>
+<body>
+<!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+<div id="main" style="width: 100%;height:400px;"></div>
+<div id="info" style="width: 100%;height:80px;">
+    <ul>
+        <li id="content">
+            <div class="info">
+
+            </div>
+        </li>
+    </ul>
+</div>
+<div class="info">
+    <div class="fl">
+        <div>
+            P网
+        </div>
+        <div>
+            当前价格
+        </div>
+    </div>
+    <div class="mid">456</div>
+    <div class="fr"></div>
+       chbtc
+    </div></div>
+</div>
+<script>
+    $(function () {
+        var myChart = echarts.init(document.getElementById('main'));
+        var market = '{{market}}';
+        var usdcny = '{{usdcny}}';
+        console.log(usdcny);
+        console.log(market);
+        //X坐标数量;
+        var size = 8;
+
+
+        var pCoinList = [];
+        var chbtcList = [];
+        var timeList = [];
+        var subList= [];
+        var currentSub = 0;
+
+        function addInfo(at, ticker) {
+            var _div = document.createElement("div");
+            var sub = (ticker.sell - ticker.buy);
+            sub = sub.toFixed(8);
+            var info = "<label>at<input type='text' value='" + at + "'></label>"
+            info = info + "<label>buy<input type='text' value='" + ticker.buy + "'></label>";
+            info = info + "<label>sell<input type='text' value='" + ticker.sell + "'></label>";
+            info = info + "<label style='color:red'>" + sub + "</label>"
+            info = info + "<label>low<input type='text' value='" + ticker.low + "'></label>";
+            info = info + "<label>high<input type='text' value='" + ticker.high + "'></label>";
+            info = info + "<label>last<input type='text' value='" + ticker.last + "'></label>";
+            info = info + "<label>vol<input type='text' value='" + ticker.vol + "'></label>";
+            _div.innerHTML = info;
+
+            $("#content").prepend(_div);
+
+        }
+
+        function doQuery() {
+            var d = new Date();
+            var time = (d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds());
+            timeList.push(time);
+            if (timeList.length > size) {
+                //弹出最后一个元素;
+                timeList.shift();
+            }
+            var min = 0;
+            var url = 'getChbtcPHomeDetail?market='+market+'&usdcny='+usdcny;
+            console.log(url);
+
+            $.ajax({
+                url: url,
+                success: function (data) {
+                    console.log(data);
+                    chbtcList.push(Number(data.chbtcData.ticker.sell));
+                    pCoinList.push(Number(data.pData.currencyprice).toFixed(3))
+                    currentSub = (Number(data.pData.currencyprice / data.chbtcData.ticker.sell ) * 100 ).toFixed(3) ;
+                    subList.push(currentSub)
+                    if (pCoinList.length > size) {
+                        pCoinList.shift()
+                    }
+                    if (chbtcList.length > size) {
+                        chbtcList.shift()
+                    }
+                    if (subList.length > size){
+                        subList.shift();
+                    }
+
+
+                    min = ( min == 0 ? data.chbtcData.ticker.sell : min);
+                    min = (min > data.chbtcData.ticker.sell ? data.chbtcData.ticker.sell : min);
+                    min = (min > data.pData.currencyprice ? data.pData.currencyprice : min);
+                    min = Number(min).toFixed(2) - 1;
+
+                    console.log(chbtcList);
+                    console.log(pCoinList);
+                    console.log(currentSub);
+                    console.log(subList);
+                    option = {
+                        title: {
+                            text: '走势图',
+                            subtext: ''
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['PoloNiex', 'CHBTC']
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                mark: {show: true},
+                                dataView: {show: true, readOnly: false},
+                                magicType: {show: true, type: ['line', 'bar']},
+                                restore: {show: true},
+                                saveAsImage: {show: true}
+                            }
+                        },
+                        calculable: true,
+                        xAxis: [
+                            {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: timeList
+                            }
+                        ],
+                        yAxis: [
+                            {
+                                type: 'value',
+                                min: min,
+                                axisLabel: {
+                                    formatter: '{value}'
+                                }
+                            }
+                        ],
+                        series: [
+                            {
+                                name: 'PoloNiex',
+                                type: 'line',
+                                data: pCoinList,
+                                markPoint: {
+                                    symbolSize: 100,
+                                    data: [
+                                        {type: 'max', name: '最大值'},
+                                        {type: 'min', name: '最小值'}
+                                    ]
+                                },
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            },
+                            {
+                                name: 'CHBTC',
+                                type: 'line',
+                                data: chbtcList,
+                                markPoint: {
+                                    symbolSize: 100,
+                                    data: [
+                                        {type: 'max', name: '最大值'},
+                                        {type: 'min', name: '最小值'}
+                                    ]
+                                },
+                                markLine: {
+                                    data: [
+                                        {type: 'average', name: '平均值'}
+                                    ]
+                                }
+                            }
+                        ]
+                    };
+                    myChart.setOption(option);
+
+                },
+                error: function (data) {
+                    console.log('error', data)
+                }
+            });
+        }
+
+        setInterval(function () {
+            doQuery();
+        }, 5000);
+    });
+
+</script>
+
+</body>
+</html>

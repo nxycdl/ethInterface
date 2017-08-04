@@ -7,7 +7,8 @@ module.exports = {
         yunbiService: require(C.service + 'yunbi/yunbiService'),
         wxUtils: require(C.service + 'weixin/wxUtils'),
         tickService: require(C.service + 'yunbi/tickService'),
-        sosobtcService:require(C.service + 'yunbi/sosobtcService'),
+        sosobtcService: require(C.service + 'yunbi/sosobtcService'),
+        chBtcService: require(C.service + 'yunbi/chBtcService'),
     },
     index: function*() {
         this.body = yield this.render("yunbi/index");
@@ -93,9 +94,63 @@ module.exports = {
         var okCoin_ltb = yield  this.tickService.getAllTickers('OKCOIN', 'ltc');
         this.body = {'OKCOIN': okCoin_ltb, 'CHBTC': chbtc_ltb};
     },
-    getSosoBtcHomePage:function*() {
+    getSosoBtcHomePage: function*() {
         var data = yield  this.sosobtcService.getSosoBtcHomePage();
-        this.body= data;
+        this.body = data;
+    }
+    , getChbtcPHomePage: function*() {
+        var options = this.query;
+        this.body = yield  this.render('yunbi/chbtctop', options);
+    },
+    getChbtcPHomeDetail: function*() {
+        var options = this.query;
+        //获取P网的BTC美元价格
+        console.time('pBTC');
+        var _pBTCUSD = yield this.sosobtcService.getPBTCUSDfromSoso();
+        console.timeEnd('pBTC');
+        var _pPriece = Number(0);
+        var _PBtcPrice = Number(0);
+        var _chbtcPriceData = {}
+        console.time('pData');
+        if (options.market == 'ltc') {
+            _PBtcPrice = yield this.sosobtcService.getPLTC_BTCfromSoso();
+        }
+        else if (options.market == 'eth') {
+            _PBtcPrice = yield this.sosobtcService.getPETH_BTCfromSoso();
+        }
+        else if (options.market == 'etc') {
+            _PBtcPrice = yield this.sosobtcService.getPETC_BTCfromSoso();
+        }
+        else if (options.market == 'bts') {
+            _PBtcPrice = yield this.sosobtcService.getPBTS_BTCfromSoso();
+        }
+        console.timeEnd('pData');
+
+        console.time('chbtc');
+        _chbtcPriceData = yield this.chBtcService.getTickers(options.market);
+        console.timeEnd('chbtc');
+        var _pData = {
+            btcusdprice: _pBTCUSD,
+            tobtcprice: _PBtcPrice,
+            usdcny: options.usdcny,
+            btccny: (Number(options.usdcny) * _pBTCUSD ).toFixed(6),
+            currencyprice: (Number(options.usdcny) * _pBTCUSD * _PBtcPrice ).toFixed(6),
+        }
+        //console.log('xxxxx', _chbtcPriceData);
+        if (_chbtcPriceData.code === '0000') {
+            _chbtcPriceData = _chbtcPriceData.data[0];
+        } else {
+            _chbtcPriceData = {
+                "dataType": "ticker",
+                "ticker": {"vol": "0", "last": "0", "sell": "0", "buy": "0", "high": "0", "low": "0"},
+                "date": "1501811950232",
+                "channel": "bts_cny_ticker"
+            };
+        }
+
+        var _result = {pData: _pData, chbtcData: _chbtcPriceData};
+        //console.log(_result);
+        this.body = _result;
     }
 
 }

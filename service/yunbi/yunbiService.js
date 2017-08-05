@@ -94,8 +94,8 @@ module.exports = function (self) {
             return data[0];
 
         },
-        getTickers:function*(market){
-            market = market +'cny';
+        getTickers: function*(market) {
+            market = market + 'cny';
             console.log('xxxxxx');
             var url = 'https://yunbi.com//api/v2/tickers/' + market + '.json';
             var result = {
@@ -112,15 +112,38 @@ module.exports = function (self) {
                 result = {
                     body: '[]'
                 }
-                return _.biz.outjson('-1',e,[]);
+                return _.biz.outjson('-1', e, []);
             }
             console.log('end get tickers \t\t' + new Date());
             if (result.body.length == 0) {
-                return _.biz.outjson('0000','',[]);
+                return _.biz.outjson('0000', '', []);
             }
             result = JSON.parse(result.body);
             result.date = result.at;
-            return _.biz.outjson('0000','',result);
+            return _.biz.outjson('0000', '', result);
+        },
+        savePDataChbtcData: function*(market, _pData, _chBtcData) {
+            console.log(_pData);
+            console.log(_chBtcData);
+            var _date = M.moment(_chBtcData.ticker.date).format('YYYY-MM-DD HH:mm:ss');
+            var _currentpoloniex = Number(_pData.currencyprice).toFixed(3);
+            var _currentChbtc = Number(_chBtcData.ticker.sell);
+            if (_currentChbtc == 0) return;
+            var currentSub = (Number((_currentChbtc - _currentpoloniex  ) / _currentChbtc) * 100 ).toFixed(3);
+
+            var db = M.pool.getConnection();
+            try {
+                var sql = "INSERT INTO diffdataptochbtc (market, bussdate, chbtc_buy, chbtc_sell, p_btccny, p_btcusdprice, p_currencyprice, p_tobtcprice, usdcny, cj ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+                var params = [market, _date, _chBtcData.ticker.buy, _currentChbtc, _pData.btccny, _pData.btcusdprice, _pData.currencyprice, _pData.tobtcprice, _pData.usdcny, currentSub];
+                console.log(params);
+                var ins = yield db.query(sql, params);
+                if (ins[0].affectedRows != 0) {
+                    console.log(ins.error)
+                }
+            } finally {
+                M.pool.releaseConnection(db);
+            }
+
         }
     }
 }

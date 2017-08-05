@@ -149,6 +149,7 @@ module.exports = {
         }
 
         var _result = {pData: _pData, chbtcData: _chbtcPriceData};
+        yield  this.yunbiService.savePDataChbtcData(options.market,_pData,_chbtcPriceData);
         //console.log(_result);
         this.body = _result;
     }

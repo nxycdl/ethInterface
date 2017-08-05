@@ -60,8 +60,8 @@
     </ul>
 </div>-->
 <div class="btcinfo">
-    <p>当前比特币美元价格: <span id="btcusd"></span> </p>
-    <p>当前比特币人民币价格: <span id="btccny"></span> </p>
+    <p>当前比特币美元价格: <span id="btcusd"></span></p>
+    <p>当前比特币人民币价格: <span id="btccny"></span></p>
 
 </div>
 <div class="info">
@@ -120,6 +120,7 @@
             $.ajax({
                 url: url,
                 success: function (data) {
+                    console.log(data);
                     var _currentpoloniex = Number(data.pData.currencyprice).toFixed(3);
                     var _currentChbtc = Number(data.chbtcData.ticker.sell);
                     if (_currentpoloniex > $('#currentpoloniex').html()) {
@@ -168,7 +169,7 @@
 
                     option = {
                         title: {
-                            text: '走势图[ ' + market +' ]' ,
+                            text: '走势图[ ' + market + ' ]',
                             subtext: ''
                         },
                         tooltip: {

@@ -123,8 +123,8 @@ module.exports = function (self) {
             return _.biz.outjson('0000', '', result);
         },
         savePDataChbtcData: function*(market, _pData, _chBtcData) {
-            console.log(_pData);
-            console.log(_chBtcData);
+            //console.log(_pData);
+            //console.log(_chBtcData);
             var _date = M.moment(_chBtcData.ticker.date).format('YYYY-MM-DD HH:mm:ss');
             var _currentpoloniex = Number(_pData.currencyprice).toFixed(3);
             var _currentChbtc = Number(_chBtcData.ticker.sell);
@@ -135,7 +135,7 @@ module.exports = function (self) {
             try {
                 var sql = "INSERT INTO diffdataptochbtc (market, bussdate, chbtc_buy, chbtc_sell, p_btccny, p_btcusdprice, p_currencyprice, p_tobtcprice, usdcny, cj ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
                 var params = [market, _date, _chBtcData.ticker.buy, _currentChbtc, _pData.btccny, _pData.btcusdprice, _pData.currencyprice, _pData.tobtcprice, _pData.usdcny, currentSub];
-                console.log(params);
+                //console.log(params);
                 var ins = yield db.query(sql, params);
                 if (ins[0].affectedRows != 0) {
                     console.log(ins.error)

@@ -226,7 +226,7 @@ module.exports = function (root, kpath) {
     var netPullEthOur = new CronJob(
         '0 0 0/1 * * * * ',
         function () {
-            // co(cronService.startRequestEthPoolHour());
+            co(cronService.startRequestEthPoolHour());
         },
         false,
         "Asia/Shanghai"

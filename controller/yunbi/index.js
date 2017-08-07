@@ -160,7 +160,7 @@ module.exports = {
         var _currentTime = M.moment().format('YYYY-MM-DD HH:mm:ss');
         var currentSub = (Number((_currentChbtc - _currentpoloniex  ) / _currentChbtc) * 100 ).toFixed(3);
         console.log(currentSub);
-        if (currentSub >= 0) {
+        if (currentSub >= 3) {
             var _data = yield this.messageService.sendBTCDiffMessage(_currentTime + '  P网到CHBTC', '差价到达' + currentSub + '%', '币种:' + options.market)
         }
         this.body = _result;

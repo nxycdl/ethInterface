@@ -277,7 +277,7 @@ module.exports = {
     },
     startRequestEthPool: function *() {
         //每小时最大的发送次数;
-        var maxSendCountHour = 2;
+        var maxSendCountHour = 10;
         //等待15分钟如果还收不到数据认为死机了;
         var maxWaitTime = 15;
         var data = yield netpullService.startRequestEthPool();

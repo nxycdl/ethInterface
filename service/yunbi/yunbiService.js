@@ -126,7 +126,7 @@ module.exports = function (self) {
             //console.log(_pData);
             //console.log(_chBtcData);
             var _date = M.moment(_chBtcData.ticker.date).format('YYYY-MM-DD HH:mm:ss');
-            var _currentpoloniex = Number(_pData.currencyprice).toFixed(3);
+            var _currentpoloniex = Number(_pData.currencyprice).toFixed(8);
             var _currentChbtc = Number(_chBtcData.ticker.sell);
             if (_currentChbtc == 0) return;
             var currentSub = (Number((_currentChbtc - _currentpoloniex  ) / _currentChbtc) * 100 ).toFixed(3);

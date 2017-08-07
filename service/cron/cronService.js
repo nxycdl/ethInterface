@@ -8,6 +8,7 @@ var chBtcService = require(C.service + 'yunbi/chBtcService')();
 var huobiService = require(C.service + 'yunbi/huobiService')();
 var tickService = require(C.service + 'yunbi/tickService')();
 var netpullService = require(C.service + 'netpull/netpullService')();
+var messageService = require(C.service + 'yunbi/messageService')();
 
 
 module.exports = {
@@ -278,7 +279,7 @@ module.exports = {
         //每小时最大的发送次数;
         var maxSendCountHour = 2;
         //等待15分钟如果还收不到数据认为死机了;
-        var maxWaitTime = 15 ;
+        var maxWaitTime = 15;
         var data = yield netpullService.startRequestEthPool();
         if (data.code != '0000') return;
         var data = data.data[0];
@@ -293,10 +294,12 @@ module.exports = {
                 underLine.push(info.name);
                 info.currentData = 0;
             }
-            max = max + Number(_.isEmpty(info.currentData) ? 0 :info.currentData );
+            max = max + Number(_.isEmpty(info.currentData) ? 0 : info.currentData);
         });
         var max = (max / 1000).toFixed(2) + 'G';
         console.log('当前在线' + data.length + '合计:' + max);
+        // underLine.push('D01');
+        // underLine.push("D02");
         if (C.isaliSms == false) return;
         //死机小于几台的时候不发送;
         if (underLine.length < 1) return;
@@ -350,7 +353,7 @@ module.exports = {
             return;
         }
 
-        var _tmp = hour + '_' + cnt +'_'+ key1;
+        var _tmp = hour + '_' + cnt + '_' + key1;
         if (G.sendCountHour[_tmp] == undefined) {
             G.sendCountHour[_tmp] = 0;
         }
@@ -365,27 +368,34 @@ module.exports = {
         G.sendCountHour[_tmp] = G.sendCountHour[_tmp] + 1;
         console.log('开始发送短信' + M.moment().format('YYYYMMDDHHmm'));
         console.log(JSON.stringify(params));
-        smsClient.sendSMS({
-            PhoneNumbers: '13099590292,13895671864',
-            SignName: '码农',
-            TemplateCode: 'SMS_81495007',
-            TemplateParam: JSON.stringify(params)
-        }).then(function (res) {
-            let {Code} = res
-            if (Code === 'OK') {
-                //处理返回参数
-                console.log(res)
-            }
-        }, function (err) {
-            console.log(err)
-        })
+
+
+        var data = yield messageService.sendServiceExceptionMessage(underLine.length >0 ? '异常服务器:' + underLine.toString() :'');
+        console.log(data);
+
+        /*
+         smsClient.sendSMS({
+         PhoneNumbers: '13099590292,13895671864',
+         SignName: '码农',
+         TemplateCode: 'SMS_81495007',
+         TemplateParam: JSON.stringify(params)
+         }).then(function (res) {
+         let {Code} = res
+         if (Code === 'OK') {
+         //处理返回参数
+         console.log(res)
+         }
+         }, function (err) {
+         console.log(err)
+         })
+         */
 
 
     },
     startRequestEthPoolHour: function *() {
         var data = yield netpullService.startRequestEthPool();
         //等待15分钟如果还收不到数据认为死机了;
-        var maxWaitTime = 15 ;
+        var maxWaitTime = 15;
         if (data.code != '0000') return;
         var data = data.data[0];
         var max = 0;
@@ -399,7 +409,7 @@ module.exports = {
                 underLine.push(info.name);
                 info.currentData = 0;
             }
-            max = max + Number(_.isEmpty(info.currentData) ? 0 :info.currentData );
+            max = max + Number(_.isEmpty(info.currentData) ? 0 : info.currentData);
         });
         var max = (max / 1000).toFixed(2) + 'G';
         console.log('当前在线' + data.length + '合计:' + max);
@@ -427,20 +437,26 @@ module.exports = {
         const secretAccessKey = C.alismssecretAccessKey;
         var smsClient = new _.aliSMSClient({accessKeyId, secretAccessKey});
         console.log('发送每小时短信！');
-        smsClient.sendSMS({
-            PhoneNumbers: '13895652926,13895671864',
-            SignName: '码农',
-            TemplateCode: 'SMS_80975015',
-            TemplateParam: JSON.stringify(params)
-        }).then(function (res) {
-            let {Code} = res
-            if (Code === 'OK') {
-                //处理返回参数
-                console.log(res)
-            }
-        }, function (err) {
-            console.log(err)
-        })
+        _list = '';
+        if (underLine.length > 0) {
+            _list = underLine.toString();
+            _list = "不在线:" + _list;
+        }
+        var data = yield messageService.sendServiceRunMessage(data.length + '台', '算力:' + max , _list)
+        /*smsClient.sendSMS({
+         PhoneNumbers: '13895652926,13895671864',
+         SignName: '码农',
+         TemplateCode: 'SMS_80975015',
+         TemplateParam: JSON.stringify(params)
+         }).then(function (res) {
+         let {Code} = res
+         if (Code === 'OK') {
+         //处理返回参数
+         console.log(res)
+         }
+         }, function (err) {
+         console.log(err)
+         })*/
 
 
     }

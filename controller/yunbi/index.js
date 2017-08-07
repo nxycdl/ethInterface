@@ -9,6 +9,7 @@ module.exports = {
         tickService: require(C.service + 'yunbi/tickService'),
         sosobtcService: require(C.service + 'yunbi/sosobtcService'),
         chBtcService: require(C.service + 'yunbi/chBtcService'),
+        messageService: require(C.service + 'yunbi/messageService'),
     },
     index: function*() {
         this.body = yield this.render("yunbi/index");
@@ -149,9 +150,21 @@ module.exports = {
         }
 
         var _result = {pData: _pData, chbtcData: _chbtcPriceData};
-        yield  this.yunbiService.savePDataChbtcData(options.market,_pData,_chbtcPriceData);
-        //console.log(_result);
+        yield  this.yunbiService.savePDataChbtcData(options.market, _pData, _chbtcPriceData);
+        var _currentpoloniex = Number(_pData.currencyprice).toFixed(3);
+        var _currentChbtc = Number(_chbtcPriceData.ticker.sell);
+        if (_currentChbtc == 0) {
+            this.body = _result;
+            return;
+        }
+        var _currentTime = M.moment().format('YYYY-MM-DD HH:mm:ss');
+        var currentSub = (Number((_currentChbtc - _currentpoloniex  ) / _currentChbtc) * 100 ).toFixed(3);
+        console.log(currentSub);
+        if (currentSub >= 0) {
+            var _data = yield this.messageService.sendBTCDiffMessage(_currentTime + '  P网到CHBTC', '差价到达' + currentSub + '%', '币种:' + options.market)
+        }
         this.body = _result;
+
     }
 
 }

@@ -214,10 +214,10 @@ module.exports = function (root, kpath) {
 
     //网络爬虫;
     var netPull = new CronJob(
-        '0 */3 * * * *',
-       // '*/5 * * * * *',
+         '0 */3 * * * *',
+        // '*/5 * * * * *',
         function () {
-            // co(cronService.startRequestEthPool());
+            co(cronService.startRequestEthPool());
         },
         false,
         "Asia/Shanghai"

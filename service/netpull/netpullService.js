@@ -50,6 +50,39 @@ module.exports = function (self) {
                 }
             });
             return _.biz.outjson('0000','',infoList);
+        },
+        startRequestYunBi:function*(){
+            //获取云币网的数据;
+            var url = "https://yunbi.com/markets/btccny";
+            var result = {
+                body: '[]'
+            }
+            try {
+                result = yield M.request({
+                    uri: url,
+                    method: 'get'
+                });
+            } catch (e) {
+                console.error(e);
+                result = {
+                    body: '[]'
+                }
+                return '';
+            }
+            //var $ = M.cheerio.load('<h2 class="title">Hello world</h2>'); //采用cheerio模块解析html
+            var infoList = [];
+            var $ = M.cheerio.load(result.body); //采用cheerio模块解析html
+            var _table = $('thead').text();
+            if (_table =='') {
+                console.log('无返回数据！');
+                return _.biz.outjson('-1','网络异常','');
+            }
+            console.log('解析完毕');
+
+            //var _info = $('div .hover-target .panel-body-head thead').text();
+            var _info = $('div .hover-target .panel-body-content tbody tr').text();
+            console.log(_info);
+            return _.biz.outjson(1,'','success');
         }
     }
 }

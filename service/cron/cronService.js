@@ -459,5 +459,10 @@ module.exports = {
          })*/
 
 
+    },
+    startRequestYunBiKLine:function*(){
+        var _data = yield netpullService.startRequestYunBi();
+        console.log(_data);
+
     }
 }

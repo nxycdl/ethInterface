@@ -232,11 +232,22 @@ module.exports = function (root, kpath) {
         "Asia/Shanghai"
     );
 
+    var netPullYunBi = new CronJob(
+        '*/5 * * * * *',
+        function () {
+            //co(cronService.startRequestYunBiKLine());
+        },
+        false,
+        "Asia/Shanghai"
+    );
+
+
     jobid.start();
     jobid2.start();
     jobOnce.start();
     netPull.start();
     netPullEthOur.start();
+    netPullYunBi.start();
 
     setTimeout(function () {
         jobOnce.stop();

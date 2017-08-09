@@ -138,7 +138,7 @@ module.exports = function (self) {
                 //console.log(params);
                 var ins = yield db.query(sql, params);
                 if (ins[0].affectedRows != 0) {
-                    console.log(ins.error)
+                    //console.log(ins.error)
                 }
             } finally {
                 M.pool.releaseConnection(db);

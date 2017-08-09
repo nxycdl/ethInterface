@@ -151,7 +151,7 @@ module.exports = {
 
         var _result = {pData: _pData, chbtcData: _chbtcPriceData};
         yield  this.yunbiService.savePDataChbtcData(options.market, _pData, _chbtcPriceData);
-        var _currentpoloniex = Number(_pData.currencyprice).toFixed(3);
+        var _currentpoloniex = Number(_pData.currencyprice);
         var _currentChbtc = Number(_chbtcPriceData.ticker.sell);
         if (_currentChbtc == 0) {
             this.body = _result;
@@ -161,7 +161,7 @@ module.exports = {
         var currentSub = (Number((_currentChbtc - _currentpoloniex  ) / _currentChbtc) * 100 ).toFixed(3);
         console.log(currentSub);
         if (currentSub >= 3) {
-            var _data = yield this.messageService.sendBTCDiffMessage(_currentTime + '  P网到CHBTC', '差价到达' + currentSub + '%', '币种:' + options.market)
+            var _data = yield this.messageService.sendBTCDiffMessage(_currentTime + '  P网到CHBTC', '差价到达' + currentSub + '%', '币种:' + options.market +',CHBTC=' +  _currentChbtc.toFixed(3) + ',polniex=' +  _currentpoloniex.toFixed(3))
         }
         this.body = _result;
 

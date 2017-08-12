@@ -159,9 +159,22 @@ module.exports = {
         }
         var _currentTime = M.moment().format('YYYY-MM-DD HH:mm:ss');
         var currentSub = (Number((_currentChbtc - _currentpoloniex  ) / _currentChbtc) * 100 ).toFixed(3);
-        console.log(currentSub);
+        console.log('当前' +options.market + '差价:' + currentSub);
         if (currentSub >= 3) {
-            var _data = yield this.messageService.sendBTCDiffMessage(_currentTime + '  P网到CHBTC', '差价到达' + currentSub + '%', '币种:' + options.market +',CHBTC=' +  _currentChbtc.toFixed(3) + ',polniex=' +  _currentpoloniex.toFixed(3))
+            var key = options.market + '_diff_' + _currentTime.substr(0, 16) ;
+            if (G[key] == undefined) {
+                G[key] = {
+                    last: currentSub
+                }
+            }
+
+            var bl =0.02 ;
+            console.log((G[key])['last'],currentSub * (1-bl).toFixed(3) ,currentSub * (1+bl).toFixed(3) ) ;
+            if ((G[key])['last'] < (currentSub * (1-bl).toFixed(3)) || (G[key])['last']  > (currentSub *(1+bl).toFixed(3)) ) {
+                (G[key])['last'] = currentSub;
+
+                var _data = yield this.messageService.sendBTCDiffMessage(_currentTime + '  P网到CHBTC', '差价到达' + currentSub + '%', '币种:' + options.market + ',CHBTC=' + _currentChbtc.toFixed(3) + ',polniex=' + _currentpoloniex.toFixed(3))
+            }
         }
         this.body = _result;
 

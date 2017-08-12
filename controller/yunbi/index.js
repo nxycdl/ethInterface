@@ -168,7 +168,7 @@ module.exports = {
                 }
             }
 
-            var bl =0.02 ;
+            var bl =0.1 ;
             console.log((G[key])['last'],currentSub * (1-bl).toFixed(3) ,currentSub * (1+bl).toFixed(3) ) ;
             if ((G[key])['last'] < (currentSub * (1-bl).toFixed(3)) || (G[key])['last']  > (currentSub *(1+bl).toFixed(3)) ) {
                 (G[key])['last'] = currentSub;

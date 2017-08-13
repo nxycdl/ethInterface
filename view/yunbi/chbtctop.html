@@ -49,7 +49,7 @@
 </head>
 <body>
 <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-<div id="main" style="width: 100%;height:350px;"></div>
+<div id="main" style="width: 100%;height:300px;"></div>
 <!--<div id="info" style="width: 100%;height:80px;">
     <ul>
         <li id="content">
@@ -62,7 +62,7 @@
 <div class="btcinfo">
     <p>当前比特币美元价格: <span id="btcusd"></span></p>
     <p>当前比特币人民币价格: <span id="btccny"></span></p>
-
+    <p>当前CHBTC   人民价格: <span id="chbtcPrice"></span><span id="chbtcPricebl" style="color: #4ab7ec"></span></p>
 </div>
 <div class="info">
     <div class="fl">
@@ -123,6 +123,7 @@
                     console.log(data);
                     var _currentpoloniex = Number(data.pData.currencyprice).toFixed(8);
                     var _currentChbtc = Number(data.chbtcData.ticker.sell);
+                    var _currentChbtcPrice = Number(data.chbtcBTCPrice.ticker.sell);
                     if (_currentpoloniex > $('#currentpoloniex').html()) {
                         setTimeout(function () {
                             $('#currentpoloniex').css('color', '#17cc5f');
@@ -150,6 +151,9 @@
                     $('#currentcj').html(currentSub + '%');
                     $('#btcusd').html(data.pData.btcusdprice);
                     $('#btccny').html(data.pData.btccny);
+                    $('#chbtcPrice').html(_currentChbtcPrice);
+                    $('#chbtcPricebl').html('&#9;&#9;当前差价率:' +  (Number((_currentChbtcPrice-data.pData.btccny)/_currentChbtcPrice * 100).toFixed(4)) + '%');
+
                     if (pCoinList.length > size) {
                         pCoinList.shift()
                     }

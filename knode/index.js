@@ -240,6 +240,14 @@ module.exports = function (root, kpath) {
         false,
         "Asia/Shanghai"
     );
+    var autoListenerOrder = new CronJob(
+        '*/5 * * * * *',
+        function () {
+            co(cronService.autoListenerOrder());
+        },
+        false,
+        "Asia/Shanghai"
+    );
 
 
     jobid.start();
@@ -248,6 +256,7 @@ module.exports = function (root, kpath) {
     netPull.start();
     netPullEthOur.start();
     netPullYunBi.start();
+    autoListenerOrder.start();
 
     setTimeout(function () {
         jobOnce.stop();

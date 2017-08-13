@@ -76,7 +76,7 @@ module.exports = function (self) {
             var canonical_verb = 'GET';
             var canonical_uri = '/api/v2/order';
             params = _.signYunbi(canonical_verb, canonical_uri, params);
-            console.log(params);
+            // console.log(params);
             var data = '';
             for (var key in params) {
                 data = data + '&' + key + '=' + params[key];
@@ -143,6 +143,25 @@ module.exports = function (self) {
             } finally {
                 M.pool.releaseConnection(db);
             }
+
+        },
+        cancelOrderById:function *(id) {
+            var params = {id: id};
+            var canonical_verb = 'POST';
+            var canonical_uri = '/api/v2/order/delete.json';
+            params = _.signYunbi(canonical_verb, canonical_uri, params);
+            // console.log(params);
+            var data = '';
+            for (var key in params) {
+                data = data + '&' + key + '=' + params[key];
+            }
+            var result = yield M.request({
+                uri: 'https://yunbi.com' + canonical_uri ,
+                method: 'POST',
+                form: params
+            });
+            console.log(result.body);
+            return result.body;
 
         }
     }

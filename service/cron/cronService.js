@@ -9,6 +9,7 @@ var huobiService = require(C.service + 'yunbi/huobiService')();
 var tickService = require(C.service + 'yunbi/tickService')();
 var netpullService = require(C.service + 'netpull/netpullService')();
 var messageService = require(C.service + 'yunbi/messageService')();
+var yunbiOrderHead = require(C.service + 'yunbi/yunbiOrderHead')();
 
 
 module.exports = {
@@ -370,7 +371,7 @@ module.exports = {
         console.log(JSON.stringify(params));
 
 
-        var data = yield messageService.sendServiceExceptionMessage(underLine.length >0 ? '异常服务器:' + underLine.toString() :'');
+        var data = yield messageService.sendServiceExceptionMessage(underLine.length > 0 ? '异常服务器:' + underLine.toString() : '');
         console.log(data);
 
         /*
@@ -442,7 +443,7 @@ module.exports = {
             _list = underLine.toString();
             _list = "不在线:" + _list;
         }
-        var data = yield messageService.sendServiceRunMessage(data.length + '台', '算力:' + max , _list)
+        var data = yield messageService.sendServiceRunMessage(data.length + '台', '算力:' + max, _list)
         /*smsClient.sendSMS({
          PhoneNumbers: '13895652926,13895671864',
          SignName: '码农',
@@ -460,13 +461,149 @@ module.exports = {
 
 
     },
-    startRequestYunBiKLine:function*(){
+    startRequestYunBiKLine: function*() {
         var _data = yield netpullService.startRequestYunBi();
         console.log(_data);
 
     },
-    autoListenerOrder:function*() {
+    autoListenerOrder: function*() {
         //第一次买入100元,如果买入成功,那么在(3%)103的地方卖,当跌到(1%)99 的时候那么把103的撤销了
         // 同时在(0.9988的地方卖了)(98.8812) ;
+        console.log("autoListenerOrder start********************************");
+
+
+        var db = M.pool.getConnection();
+        var sql = '';
+        try {
+            var _yunbiOrderHead = yunbiOrderHead;
+            var orderList = yield _yunbiOrderHead.queryUnComplete(db);
+            if (orderList.length == 0) {
+                this.body = _.biz.outjson('0000', '', []);
+                return;
+            }
+
+            //循环数组;
+            for (i = 0; i < orderList.length; i++) {
+                var item = orderList[i];
+                var orderstatus = item.orderstatus;
+                if (orderstatus === '0') {
+                    console.log('开始买入');
+                    var data = yield yunbiService.createOrder('buy', item.market, item.volume, item.buyprice);
+                    data = JSON.parse(data);
+                    if (data.id != undefined) {
+                        sql = 'update orderhead set bussid = ? , orderstatus = ? where id=? ';
+                        var _data = yield _yunbiOrderHead.executeSqlx(db, sql, [data.id, '1', item.id]);
+                    }
+
+                } else if (orderstatus === '1') {
+                    console.log('等待买入订单状态');
+                    //去查询这个订单是否交易成功?
+                    var data = yield yunbiService.getOrderInfoFromServerById(item.bussid);
+                    data = JSON.parse(data);
+                    if (data.state === 'done') {
+                        sql = 'update orderhead set orderstatus = ? where id=? ';
+                        var _data = yield _yunbiOrderHead.executeSqlx(db, sql, ['2', item.id]);
+                    } else if (data.state === 'wait') {
+                        console.log('继续等待买入订单状态');
+                    } else {
+                        console.log('订单状态不对');
+                    }
+                } else if (orderstatus === '2' || orderstatus == '3' || orderstatus == '4') {
+                    //获取当前价格;
+                    //如果目前价格大于等于买入价格 那么执行卖出高价;
+
+                    var _currentPrice = yield yunbiService.getTickers((item.market).substr(0,(item.market).length-3));
+                    if (_currentPrice.code ='0000'){
+                        _currentPrice = _currentPrice.data[0].ticker.sell;
+                    }else {
+                        return ;
+                    }
+                    console.log('当前价格:' + _currentPrice) ;
+
+                    if (orderstatus === '2' && _currentPrice >= item.buyprice) {
+                        //更新状态=3 (高价卖状态)
+                        console.log('卖出高价');
+                        var data = yield yunbiService.createOrder('sell', item.market, item.volume, item.upprice);
+                        data = JSON.parse(data);
+                        if (data.id != undefined) {
+                            sql = 'update orderhead set upbussid = ? , orderstatus = ? where id=? ';
+                            var _data = yield _yunbiOrderHead.executeSqlx(db, sql, [data.id, '3', item.id]);
+                        }
+                    } else if (orderstatus === '3') {
+                        if (_currentPrice >= item.buyprice) {
+                            //检索是否成功了;
+                            console.log('检索高价交易是否成功了?');
+                            //成功之后更新状态 = 9 ;
+                            var data = yield yunbiService.getOrderInfoFromServerById(item.upbussid);
+                            data = JSON.parse(data);
+                            if (data.state === 'done') {
+                                sql = 'update orderhead set orderstatus = ? where id=? ';
+                                var _data = yield _yunbiOrderHead.executeSqlx(db, sql, ['9', item.id]);
+                            } else if (data.state === 'wait') {
+                                console.log('继续等待高价卖出订单状态');
+                            } else {
+                                console.log('订单状态不对');
+                            }
+                        } else {
+                            //撤销高价订单;
+                            //撤销订单;修改标志为2 ,.upbussid = 0 ;
+                            console.log('撤销高价订单');
+                            var data = yield yunbiService.cancelOrderById(item.upbussid);
+                            data = JSON.parse(data);
+                            if (data.id != undefined) {
+                                console.log('更新订单标志');
+                                sql = 'update orderhead set upbussid = ? , orderstatus = ? where id=? ';
+                                var _data = yield _yunbiOrderHead.executeSqlx(db, sql, ['0', '2', item.id]);
+                            }
+                        }
+                    } else if (orderstatus === '4') {
+                        if (_currentPrice >= item.buyprice) {
+                            console.log('撤销低价订单')
+                            //撤销低价订单;
+                            //撤销订单;修改标志为2 ,.sellbussid = 0 ;
+                            var data = yield yunbiService.cancelOrderById(item.sellbussid);
+                            data = JSON.parse(data);
+                            if (data.id != undefined) {
+                                sql = 'update orderhead set sellbussid = ? , orderstatus = ? where id=? ';
+                                var _data = yield _yunbiOrderHead.executeSqlx(db, sql, ['0', '2', item.id]);
+                            }
+                        } else {
+                            console.log('继续等待看低价订单是否交易成功了');
+                            //继续等待看是否交易成功了;
+                            //成功更新状态= 9 ;
+                            var data = yield yunbiService.getOrderInfoFromServerById(item.sellbussid);
+                            data = JSON.parse(data);
+                            if (data.state === 'done') {
+                                sql = 'update orderhead set  orderstatus = ? where id=? ';
+                                var _data = yield _yunbiOrderHead.executeSqlx(db, sql, ['9', item.id]);
+                            } else if (data.state === 'wait') {
+                                console.log('继续等待低价订单订单状态');
+                            } else {
+                                console.log('订单状态不对');
+                            }
+                        }
+                    } else {
+                        //等待订单如果降低到一定范围则卖出;
+                        if (_currentPrice <= item.downrangeprice) {
+                            console.log('开始挂单低价卖出');
+                            //orderstatus =4 , sellbussid ='xxx';
+                            var data = yield yunbiService.createOrder('sell', item.market, item.volume, item.downprice);
+                            data = JSON.parse(data);
+                            if (data.id != undefined) {
+                                sql = 'update orderhead set sellbussid = ? ,orderstatus = ? where id=? ';
+                                var _data = yield _yunbiOrderHead.executeSqlx(db, sql, [data.id, '4', item.id]);
+                            }
+                        } else {
+                            console.log('继续等待低价卖出状态;', _currentPrice, item.downrangeprice, _currentPrice - item.downrangeprice);
+                        }
+                    }
+                }
+            }
+            ;
+        } finally {
+            M.pool.releaseConnection(db);
+        }
+
+        console.log("autoListenerOrder end----------------------------------");
     }
 }

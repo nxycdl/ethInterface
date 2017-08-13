@@ -106,8 +106,8 @@ module.exports = {
     getChbtcPHomeDetail: function*() {
         var options = this.query;
         var _currentTime = M.moment().format('MM-DD HH:mm:ss');
-        if (G['PBTCUSD'] ==undefined){
-            G['PBTCUSD'] ={};
+        if (G['PBTCUSD'] == undefined) {
+            G['PBTCUSD'] = {};
         }
         var _pBTCUSD = G['PBTCUSD'][_currentTime];
         if (_pBTCUSD == undefined) {
@@ -120,7 +120,7 @@ module.exports = {
             console.log('缓存获取_pBTCUSD');
             var size = 0;
             for (key in G['PBTCUSD']) {
-                if (_chbtcPriceData.hasOwnProperty(key)) size++;
+                size++
             }
             if (size > 100) {
                 G['PBTCUSD'] == undefined;
@@ -158,7 +158,7 @@ module.exports = {
             console.log('缓存获取_chbtcBTCPrice');
             var size = 0;
             for (key in G['CHBTCPRICE']) {
-                if (_chbtcPriceData.hasOwnProperty(key)) size++;
+                size++;
             }
             if (size > 100) {
                 G['CHBTCPRICE'] == undefined;

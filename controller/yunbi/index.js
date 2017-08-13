@@ -164,7 +164,7 @@ module.exports = {
                 G['CHBTCPRICE'] == undefined;
             }
         }
-        console.log(G['CHBTCPRICE'] );
+        // console.log(G['CHBTCPRICE'] );
 
         console.timeEnd('chbtc');
         var _pData = {

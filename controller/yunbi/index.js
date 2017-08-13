@@ -105,10 +105,28 @@ module.exports = {
     },
     getChbtcPHomeDetail: function*() {
         var options = this.query;
-        //获取P网的BTC美元价格
-        console.time('pBTC');
-        var _pBTCUSD = yield this.sosobtcService.getPBTCUSDfromSoso();
-        console.timeEnd('pBTC');
+        var _currentTime = M.moment().format('MM-DD HH:mm:ss');
+        if (G['PBTCUSD'] ==undefined){
+            G['PBTCUSD'] ={};
+        }
+        var _pBTCUSD = G['PBTCUSD'][_currentTime];
+        if (_pBTCUSD == undefined) {
+            //获取P网的BTC美元价格
+            console.time('pBTC');
+            var _pBTCUSD = yield this.sosobtcService.getPBTCUSDfromSoso();
+            G['PBTCUSD'][_currentTime] = _pBTCUSD;
+            console.timeEnd('pBTC');
+        } else {
+            console.log('缓存获取_pBTCUSD');
+            var size = 0;
+            for (key in G['PBTCUSD']) {
+                if (_chbtcPriceData.hasOwnProperty(key)) size++;
+            }
+            if (size > 100) {
+                G['PBTCUSD'] == undefined;
+            }
+        }
+
         var _pPriece = Number(0);
         var _PBtcPrice = Number(0);
         var _chbtcPriceData = {}
@@ -129,7 +147,25 @@ module.exports = {
 
         console.time('chbtc');
         _chbtcPriceData = yield this.chBtcService.getTickers(options.market);
-        var _chbtcBTCPrice = yield this.chBtcService.getTickers('btc');
+        if (G['CHBTCPRICE'] == undefined) {
+            G['CHBTCPRICE'] = {};
+        }
+        var _chbtcBTCPrice = G['CHBTCPRICE'][_currentTime];
+        if (_chbtcBTCPrice == undefined) {
+            _chbtcBTCPrice = yield this.chBtcService.getTickers('btc');
+            G['CHBTCPRICE'][_currentTime] = _chbtcBTCPrice;
+        } else {
+            console.log('缓存获取_chbtcBTCPrice');
+            var size = 0;
+            for (key in G['CHBTCPRICE']) {
+                if (_chbtcPriceData.hasOwnProperty(key)) size++;
+            }
+            if (size > 100) {
+                G['CHBTCPRICE'] == undefined;
+            }
+        }
+        console.log(G['CHBTCPRICE'] );
+
         console.timeEnd('chbtc');
         var _pData = {
             btcusdprice: _pBTCUSD,
@@ -161,7 +197,7 @@ module.exports = {
             };
         }
 
-        var _result = {pData: _pData, chbtcData: _chbtcPriceData, chbtcBTCPrice : _chbtcBTCPrice};
+        var _result = {pData: _pData, chbtcData: _chbtcPriceData, chbtcBTCPrice: _chbtcBTCPrice};
         yield  this.yunbiService.savePDataChbtcData(options.market, _pData, _chbtcPriceData);
         var _currentpoloniex = Number(_pData.currencyprice);
         var _currentChbtc = Number(_chbtcPriceData.ticker.sell);
@@ -171,18 +207,18 @@ module.exports = {
         }
         var _currentTime = M.moment().format('YYYY-MM-DD HH:mm:ss');
         var currentSub = (Number((_currentChbtc - _currentpoloniex  ) / _currentChbtc) * 100 ).toFixed(3);
-        console.log('当前' +options.market + '差价:' + currentSub);
+        console.log('当前' + options.market + '差价:' + currentSub);
         if (currentSub >= 3) {
-            var key = options.market + '_diff_' + _currentTime.substr(0, 16) ;
+            var key = options.market + '_diff_' + _currentTime.substr(0, 16);
             if (G[key] == undefined) {
                 G[key] = {
                     last: currentSub
                 }
             }
 
-            var bl =0.1 ;
-            console.log((G[key])['last'],currentSub * (1-bl).toFixed(3) ,currentSub * (1+bl).toFixed(3) ) ;
-            if ((G[key])['last'] < (currentSub * (1-bl).toFixed(3)) || (G[key])['last']  > (currentSub *(1+bl).toFixed(3)) ) {
+            var bl = 0.1;
+            console.log((G[key])['last'], currentSub * (1 - bl).toFixed(3), currentSub * (1 + bl).toFixed(3));
+            if ((G[key])['last'] < (currentSub * (1 - bl).toFixed(3)) || (G[key])['last'] > (currentSub * (1 + bl).toFixed(3))) {
                 (G[key])['last'] = currentSub;
 
                 var _data = yield this.messageService.sendBTCDiffMessage(_currentTime + '  P网到CHBTC', '差价到达' + currentSub + '%', '币种:' + options.market + ',CHBTC=' + _currentChbtc.toFixed(3) + ',polniex=' + _currentpoloniex.toFixed(3))

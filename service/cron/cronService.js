@@ -464,5 +464,9 @@ module.exports = {
         var _data = yield netpullService.startRequestYunBi();
         console.log(_data);
 
+    },
+    autoListenerOrder:function*() {
+        //第一次买入100元,如果买入成功,那么在(3%)103的地方卖,当跌到(1%)99 的时候那么把103的撤销了
+        // 同时在(0.9988的地方卖了)(98.8812) ;
     }
 }

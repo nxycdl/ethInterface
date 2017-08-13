@@ -129,6 +129,7 @@ module.exports = {
 
         console.time('chbtc');
         _chbtcPriceData = yield this.chBtcService.getTickers(options.market);
+        var _chbtcBTCPrice = yield this.chBtcService.getTickers('btc');
         console.timeEnd('chbtc');
         var _pData = {
             btcusdprice: _pBTCUSD,
@@ -149,7 +150,18 @@ module.exports = {
             };
         }
 
-        var _result = {pData: _pData, chbtcData: _chbtcPriceData};
+        if (_chbtcBTCPrice.code === '0000') {
+            _chbtcBTCPrice = _chbtcBTCPrice.data[0];
+        } else {
+            _chbtcBTCPrice = {
+                "dataType": "ticker",
+                "ticker": {"vol": "0", "last": "0", "sell": "0", "buy": "0", "high": "0", "low": "0"},
+                "date": "1501811950232",
+                "channel": "bts_cny_ticker"
+            };
+        }
+
+        var _result = {pData: _pData, chbtcData: _chbtcPriceData, chbtcBTCPrice : _chbtcBTCPrice};
         yield  this.yunbiService.savePDataChbtcData(options.market, _pData, _chbtcPriceData);
         var _currentpoloniex = Number(_pData.currencyprice);
         var _currentChbtc = Number(_chbtcPriceData.ticker.sell);

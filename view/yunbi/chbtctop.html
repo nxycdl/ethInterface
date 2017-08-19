@@ -62,7 +62,8 @@
 <div class="btcinfo">
     <p>当前比特币美元价格: <span id="btcusd"></span></p>
     <p>当前比特币人民币价格: <span id="btccny"></span></p>
-    <p>当前CHBTC   人民价格: <span id="chbtcPrice"></span><span id="chbtcPricebl" style="color: #4ab7ec"></span></p>
+    <p>当前CHBTC 人民价格: <span id="chbtcPrice"></span><span id="chbtcPricebl" style="color: #4ab7ec"></span></p>
+    <p>预&nbsp;&nbsp;投&nbsp;&nbsp;入: <span id="calctext"></span></p>
 </div>
 <div class="info">
     <div class="fl">
@@ -120,7 +121,7 @@
             $.ajax({
                 url: url,
                 success: function (data) {
-                    console.log(data);
+                    showInfo = true;
                     var _currentpoloniex = Number(data.pData.currencyprice).toFixed(8);
                     var _currentChbtc = Number(data.chbtcData.ticker.sell);
                     var _currentChbtcPrice = Number(data.chbtcBTCPrice.ticker.sell);
@@ -143,6 +144,7 @@
                         }, 1500)
 
                     }
+
                     $('#currentChbtc').html(_currentChbtc);
                     chbtcList.push(_currentChbtc);
                     pCoinList.push(_currentpoloniex)
@@ -152,7 +154,7 @@
                     $('#btcusd').html(data.pData.btcusdprice);
                     $('#btccny').html(data.pData.btccny);
                     $('#chbtcPrice').html(_currentChbtcPrice);
-                    $('#chbtcPricebl').html('&#9;&#9;当前差价率:' +  (Number((_currentChbtcPrice-data.pData.btccny)/_currentChbtcPrice * 100).toFixed(4)) + '%');
+                    $('#chbtcPricebl').html('&#9;&#9;当前差价率:' + (Number((_currentChbtcPrice - data.pData.btccny) / _currentChbtcPrice * 100).toFixed(4)) + '%');
 
                     if (pCoinList.length > size) {
                         pCoinList.shift()
@@ -169,7 +171,15 @@
                     min = (min > data.chbtcData.ticker.sell ? data.chbtcData.ticker.sell : min);
                     min = (min > data.pData.currencyprice ? data.pData.currencyprice : min);
                     min = Number(min * 0.96).toFixed(2);
+                    if (showInfo) {
 
+                        var inPrice = 2000;
+                        var inQut = ( (inPrice / _currentChbtc)).toFixed(4);
+                        var outPrice = (inPrice / _currentChbtc * _currentpoloniex).toFixed(4);
+                        var str = '在国内投入2000可以买到:[' + market + ']\t' + inQut + '在国外可以卖到:[' + outPrice + ']\t';
+                        str = str + '盈利占比[' + ((((outPrice - inPrice) / inPrice)) * 100).toFixed(4) + '%]\t';
+                        $('#calctext').html(str);
+                    }
 
                     option = {
                         title: {

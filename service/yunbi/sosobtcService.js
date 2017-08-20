@@ -179,6 +179,9 @@ module.exports = function (self) {
         },
         getPBTS_BTCfromSoso:function*(){
             return yield  this.pullData('https://k.sosobtc.com/btsbtc_poloniex.html');
+        },
+        getPBCH_BTCfromSoso:function*(){
+            return yield  this.pullData('https://k.sosobtc.com/bchbtc_poloniex.html');
         }
     }
 }

@@ -142,6 +142,8 @@ module.exports = {
         }
         else if (options.market == 'bts') {
             _PBtcPrice = yield this.sosobtcService.getPBTS_BTCfromSoso();
+        }else if (options.market =='bcc') {
+            _PBtcPrice = yield this.sosobtcService.getPBCH_BTCfromSoso();
         }
         console.timeEnd('pData');
 
@@ -208,7 +210,7 @@ module.exports = {
         var _currentTime = M.moment().format('YYYY-MM-DD HH:mm:ss');
         var currentSub = (Number((_currentChbtc - _currentpoloniex  ) / _currentChbtc) * 100 ).toFixed(3);
         console.log('当前' + options.market + '差价:' + currentSub);
-        if (currentSub >= 4) {
+        if (Math.abs(currentSub) >= 3.5) {
             var key = options.market + '_diff_' + _currentTime.substr(0, 16);
             if (G[key] == undefined) {
                 G[key] = {

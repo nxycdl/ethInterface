@@ -249,6 +249,15 @@ module.exports = function (root, kpath) {
         "Asia/Shanghai"
     );
 
+    var saveAllYunBiTicketCron = new CronJob(
+        '*/2 * * * * *',
+        function () {
+            co(cronService.saveAllYunBiTicket());
+        },
+        false,
+        "Asia/Shanghai"
+    );
+
 
     jobid.start();
     jobid2.start();
@@ -257,6 +266,7 @@ module.exports = function (root, kpath) {
     netPullEthOur.start();
     netPullYunBi.start();
     autoListenerOrder.start();
+    saveAllYunBiTicketCron.start();
 
     setTimeout(function () {
         jobOnce.stop();

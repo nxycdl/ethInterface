@@ -512,13 +512,13 @@ module.exports = {
                     //获取当前价格;
                     //如果目前价格大于等于买入价格 那么执行卖出高价;
 
-                    var _currentPrice = yield yunbiService.getTickers((item.market).substr(0,(item.market).length-3));
-                    if (_currentPrice.code ='0000'){
+                    var _currentPrice = yield yunbiService.getTickers((item.market).substr(0, (item.market).length - 3));
+                    if (_currentPrice.code = '0000') {
                         _currentPrice = _currentPrice.data[0].ticker.sell;
-                    }else {
-                        return ;
+                    } else {
+                        return;
                     }
-                    console.log('当前价格:' + _currentPrice) ;
+                    console.log('当前价格:' + _currentPrice);
 
                     if (orderstatus === '2' && _currentPrice >= item.buyprice) {
                         //更新状态=3 (高价卖状态)
@@ -605,5 +605,100 @@ module.exports = {
         }
 
         console.log("autoListenerOrder end----------------------------------");
+    },
+    saveAllYunBiTicket: function*() {
+        //把云币所有的交易记录都保存到数据库里面;
+        var url = 'https://yunbi.com//api/v2/tickers.json';
+        var result = {
+            body: '[]'
+        }
+
+        try {
+            result = yield M.request({
+                uri: url,
+                method: 'get'
+            });
+        } catch (e) {
+            console.log(e);
+            result = {
+                body: '[]'
+            }
+        }
+
+        if (result.body.length == 0) {
+            return;
+        }
+        result = JSON.parse(result.body);
+        //console.log(result);
+        var count = 0;
+        var params = [];
+        if (G['dbkey'] == undefined) {
+
+            G['dbkey'] = [];
+        }
+        if ((G['dbkey']).length > 200) {
+            console.log('xxx', G['dbkey'].length);
+            G['dbkey']  = G['dbkey'] .slice(160, G['dbkey'] .length);
+        }
+
+        for (key in result) {
+            if (key == 'zmccny') {
+                continue;
+            }
+            var ticker = result[key].ticker;
+            var at = result[key].at;
+            var date = new Date(parseInt(at * 1000));
+            var sDbKey = key + date;
+            var sDbKeyCount = 0;
+            if (G.dbkey.length > 0) {
+
+                G.dbkey.forEach(function (item) {
+                    if (sDbKeyCount == 0 && item == key) {
+                        console.log('一致跳出循环');
+                        sDbKeyCount++;
+                    }
+                })
+            }
+            if (sDbKeyCount > 0)continue;
+            G['dbkey'].push(sDbKey);
+            count++;
+            params.push(key);
+            params.push(date);
+            params.push(ticker.buy);
+            params.push(ticker.high);
+            params.push(ticker.low);
+            params.push(ticker.sell);
+            params.push(ticker.last);
+            params.push(ticker.vol);
+        }
+
+        var market = '1';
+        var date = new Date(parseInt(result.at * 1000));
+        var sV = '';
+        for (i = 0; i < count; i++) {
+            sV = sV + '(?,?,?,?,?,?,?,?),';
+        }
+        sV = sV.substr(0, sV.length - 1);
+
+
+        var db = M.pool.getConnection();
+        try {
+            var sql = "insert into busslog (market,rq, buy, high, low, sell, last, vol)values" + sV;
+
+            //console.log(params);
+            var data = yield db.query(sql, params);
+            this.body = data[0];
+            var insertCount = data[0].affectedRows ;
+            if (insertCount ===0){
+                console.log('true');
+            }
+            if (insertCount === 0 ) {
+                console.log('插入失败!',insertCount);
+            }else{
+                console.log('插入' + insertCount + '条数据' + new Date());
+            }
+        } finally {
+            M.pool.releaseConnection(db);
+        }
     }
 }

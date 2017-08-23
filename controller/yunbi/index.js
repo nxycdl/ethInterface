@@ -142,7 +142,7 @@ module.exports = {
         }
         else if (options.market == 'bts') {
             _PBtcPrice = yield this.sosobtcService.getPBTS_BTCfromSoso();
-        }else if (options.market =='bcc') {
+        } else if (options.market == 'bcc') {
             _PBtcPrice = yield this.sosobtcService.getPBCH_BTCfromSoso();
         }
         console.timeEnd('pData');
@@ -227,6 +227,16 @@ module.exports = {
             }
         }
         this.body = _result;
+
+    },
+    sendMessage: function*() {
+        var inData = this.request.body;
+        if (inData.messagetype =='1') {
+            //涨幅连续超过三次短信;
+            var _currentTime = M.moment().format('YYYY-MM-DD HH:mm:ss');
+            yield this.messageService.sendBTCDiffMessage(_currentTime ,inData.messageinfo, '开盘涨幅3分钟内连续上涨！')
+        }
+        this.body = {result: true};
 
     }
 

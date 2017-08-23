@@ -212,7 +212,7 @@ module.exports = {
         console.log('当前' + options.market + '差价:' + currentSub);
         if (Math.abs(currentSub) >= 3.5) {
             var key = options.market + '_diff_' + _currentTime.substr(0, 16);
-            var _dateM = M.moment().Format('YYYY-MM-DD HH:mm');
+            var _dateM = M.moment().format('YYYY-MM-DD HH:mm');
             if (G[key] == undefined) {
                 G[key] = {
                     _dateM: 0

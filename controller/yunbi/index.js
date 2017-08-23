@@ -212,19 +212,23 @@ module.exports = {
         console.log('当前' + options.market + '差价:' + currentSub);
         if (Math.abs(currentSub) >= 3.5) {
             var key = options.market + '_diff_' + _currentTime.substr(0, 16);
+            var _dateM = newDate.Format("yyyy-MM-dd hh:mm");
             if (G[key] == undefined) {
                 G[key] = {
-                    last: currentSub
+                    _dateM: 0
                 }
             }
+            //一分钟发的超过10次不在发送;
+            var newDate = new Date();
 
-            var bl = 0.1;
-            console.log((G[key])['last'], currentSub * (1 - bl).toFixed(3), currentSub * (1 + bl).toFixed(3));
-            if ((G[key])['last'] < (currentSub * (1 - bl).toFixed(3)) || (G[key])['last'] > (currentSub * (1 + bl).toFixed(3))) {
-                (G[key])['last'] = currentSub;
-
-                var _data = yield this.messageService.sendBTCDiffMessage(_currentTime + '  P网到CHBTC', '差价到达' + currentSub + '%', '币种:' + options.market + ',CHBTC=' + _currentChbtc.toFixed(3) + ',polniex=' + _currentpoloniex.toFixed(3))
+            if (G[key][_dateM] == undefined) {
+                G[key][_dateM]= 0;
             }
+            if (G[key][_dateM]>10) {
+                return;
+            }
+            var _data = yield this.messageService.sendBTCDiffMessage(_currentTime + '  P网到CHBTC', '差价到达' + currentSub + '%', '币种:' + options.market + ',CHBTC=' + _currentChbtc.toFixed(3) + ',polniex=' + _currentpoloniex.toFixed(3))
+            G[key][_dateM] = (G[key][_dateM]) + 1 ;
         }
         this.body = _result;
 

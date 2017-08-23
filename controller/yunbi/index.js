@@ -224,12 +224,12 @@ module.exports = {
             if (G[key][_dateM] == undefined) {
                 G[key][_dateM]= 0;
             }
-            if (G[key][_dateM]>10) {
+            if (G[key][_dateM]>4) {
                 return;
             }
-            console.log(G[key][_dateM]);
-            var _data = yield this.messageService.sendBTCDiffMessage(_currentTime + '  P网到CHBTC', '差价到达' + currentSub + '%', '币种:' + options.market + ',CHBTC=' + _currentChbtc.toFixed(3) + ',polniex=' + _currentpoloniex.toFixed(3))
             G[key][_dateM] = (G[key][_dateM]) + 1 ;
+            var _data = yield this.messageService.sendBTCDiffMessage(_currentTime + '  P网到CHBTC', '差价到达' + currentSub + '%', '币种:' + options.market + ',CHBTC=' + _currentChbtc.toFixed(3) + ',polniex=' + _currentpoloniex.toFixed(3))
+
         }
         this.body = _result;
 

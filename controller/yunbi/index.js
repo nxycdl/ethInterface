@@ -104,7 +104,9 @@ module.exports = {
         this.body = yield  this.render('yunbi/chbtctop', options);
     },
     getChbtcPHomeDetail: function*() {
+
         var options = this.query;
+        console.log(options);
         var _currentTime = M.moment().format('MM-DD HH:mm:ss');
         if (G['PBTCUSD'] == undefined) {
             G['PBTCUSD'] = {};
@@ -210,7 +212,7 @@ module.exports = {
         var _currentTime = M.moment().format('YYYY-MM-DD HH:mm:ss');
         var currentSub = (Number((_currentChbtc - _currentpoloniex  ) / _currentChbtc) * 100 ).toFixed(3);
         console.log('当前' + options.market + '差价:' + currentSub);
-        if (Math.abs(currentSub) >= 3.5) {
+        if (Math.abs(currentSub) >= 3.5 && options.send =='1') {
             var key = options.market + '_diff_' + _currentTime.substr(0, 16);
             var _dateM = M.moment().format('YYYY-MM-DD HH:mm');
             if (G[key] == undefined) {

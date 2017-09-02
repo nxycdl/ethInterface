@@ -96,6 +96,7 @@
         var myChart = echarts.init(document.getElementById('main'));
         var market = '{{market}}';
         var usdcny = '{{usdcny}}';
+        var send = '{{send}}';
 
         //X坐标数量;
         var size = 8;
@@ -117,7 +118,7 @@
                 timeList.shift();
             }
             var min = 0;
-            var url = 'getChbtcPHomeDetail?market=' + market + '&usdcny=' + usdcny;
+            var url = 'getChbtcPHomeDetail?market=' + market + '&usdcny=' + usdcny +  '&send=' + send;
             $.ajax({
                 url: url,
                 success: function (data) {

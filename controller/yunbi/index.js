@@ -82,7 +82,6 @@ module.exports = {
         this.body = yield this.render("yunbi/currencydiff")
     },
     getTickers: function*() {
-        console.log(this.query);
         this.body = yield this.tickService.getAllTickers(this.query.exchange, this.query.market);
     },
     getLTBTickersDiff: function*() {
@@ -106,7 +105,6 @@ module.exports = {
     getChbtcPHomeDetail: function*() {
 
         var options = this.query;
-        console.log(options);
         var _currentTime = M.moment().format('MM-DD HH:mm:ss');
         if (G['PBTCUSD'] == undefined) {
             G['PBTCUSD'] = {};

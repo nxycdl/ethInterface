@@ -101,6 +101,10 @@
         var usdcny = '{{usdcny}}';
         var send = '{{send}}';
         var time = '{{time}}';
+        var limit = '{{limit}}';
+        if (limit == undefined) {
+            limit = 2;
+        }
 
         //X坐标数量;
         var size = 8;
@@ -111,9 +115,9 @@
         var timeList = [];
         var subList = [];
         var currentSub = 0;
-        var isSpeak = false ;
+        var isSpeak = false;
         var speakInterval = 30000;
-        if(time>10){
+        if (time > 10) {
             speakInterval = time * 1000;
         }
 
@@ -126,7 +130,7 @@
                 timeList.shift();
             }
             var min = 0;
-            var url = 'getChbtcPHomeDetail?market=' + market + '&usdcny=' + usdcny +  '&send=' + send;
+            var url = 'getChbtcPHomeDetail?market=' + market + '&usdcny=' + usdcny + '&send=' + send;
             $.ajax({
                 url: url,
                 success: function (data) {
@@ -189,17 +193,17 @@
                         str = str + '盈利占比[' + ((((outPrice - inPrice) / inPrice)) * 100).toFixed(4) + '%]\t';
                         $('#calctext').html(str);
 
-                        var coinCount =1000;
-                        var _s ='国内'+coinCount + '个币转到国外:(' + coinCount + '*' + Number(data.pData.tobtcprice).toFixed(8) + '*' + Number(data.chbtcBTCPrice.ticker.sell) + ') / ' + Number(data.chbtcData.ticker.sell)
-                        var _sum = (coinCount * Number(data.pData.tobtcprice).toFixed(8) * Number(data.chbtcBTCPrice.ticker.sell) ) / Number(data.chbtcData.ticker.sell) ;
+                        var coinCount = 1000;
+                        var _s = '国内' + coinCount + '个币转到国外:(' + coinCount + '*' + Number(data.pData.tobtcprice).toFixed(8) + '*' + Number(data.chbtcBTCPrice.ticker.sell) + ') / ' + Number(data.chbtcData.ticker.sell)
+                        var _sum = (coinCount * Number(data.pData.tobtcprice).toFixed(8) * Number(data.chbtcBTCPrice.ticker.sell) ) / Number(data.chbtcData.ticker.sell);
                         _sum = _sum.toFixed(3);
-                        var _cj = ((1- coinCount / _sum) *100).toFixed(3);
-                        _s = _s + ' = ' + _sum ;
+                        var _cj = ((1 - coinCount / _sum) * 100).toFixed(3);
+                        _s = _s + ' = ' + _sum;
 
                         $('#calctext2').html(_s);
-                        $('#sjcx').html(' 差价:' +_cj　+'%');
-                        if (_cj > 1){
-                            speckText('当前'+ market + '差价超过' + _cj +'%');
+                        $('#sjcx').html(' 差价:' + _cj + '%');
+                        if (_cj > limit) {
+                            speckText('当前' + market + '差价超过' + _cj + '%');
                         }
                     }
 
@@ -291,16 +295,16 @@
             doQuery();
         }, 5000);
 
-        function speckText(str){
-            if ( isSpeak ) return;
+        function speckText(str) {
+            if (isSpeak) return;
             isSpeak = true;
             var url = "http://tts.baidu.com/text2audio?lan=zh&ie=UTF-8&text=" + encodeURI(str);        // baidu
             var n = new Audio(url);
             n.src = url;
             n.play();
-            setTimeout(function(){
-                isSpeak =false;
-            },speakInterval);
+            setTimeout(function () {
+                isSpeak = false;
+            }, speakInterval);
         }
     });
 

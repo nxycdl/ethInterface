@@ -13,6 +13,7 @@ module.exports = function (root) {
         sign: require(root + '/function/sign'),
         signYunbi: require(root + '/function/signYunbi'),
         biz: require(root + '/function/returnout'),
-        aliSMSClient:require(root+'/function/aliSMSClient')
+        aliSMSClient:require(root+'/function/aliSMSClient'),
+        signChbtc: require(root + '/function/signChbtc'),
     }
 }

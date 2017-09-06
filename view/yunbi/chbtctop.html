@@ -298,6 +298,7 @@
         }, 5000);
 
         function speckText(str) {
+            console.log(str);
             if (isSpeak) return;
             isSpeak = true;
             var url = "http://tts.baidu.com/text2audio?lan=zh&ie=UTF-8&text=" + encodeURI(str);        // baidu

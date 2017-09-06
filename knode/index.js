@@ -257,6 +257,15 @@ module.exports = function (root, kpath) {
         false,
         "Asia/Shanghai"
     );
+    // chBTC自动交易;
+    var autoListenerChbtcOrder = new CronJob(
+        '*/2 * * * * *',
+        function () {
+            co(cronService.autoListenerMyChbtcOrder());
+        },
+        false,
+        "Asia/Shanghai"
+    );
 
 
     jobid.start();
@@ -267,6 +276,7 @@ module.exports = function (root, kpath) {
     netPullYunBi.start();
     autoListenerOrder.start();
     saveAllYunBiTicketCron.start();
+    autoListenerChbtcOrder.start();
 
     setTimeout(function () {
         jobOnce.stop();

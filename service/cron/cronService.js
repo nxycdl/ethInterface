@@ -701,7 +701,7 @@ module.exports = {
             M.pool.releaseConnection(db);
         }
     },
-    checkChbtcOrder:function*(){
+    autoListenerMyChbtcOrder:function*(){
        //var orderList = yield chBtcService.getOrdersIgnoreTradeType('btc');
        //yield chBtcService.getOrder('btc',20170902910480052);
         yield chBtcService.order('buy','bts',1,0.01);

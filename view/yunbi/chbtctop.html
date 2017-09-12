@@ -200,8 +200,8 @@
                         $('#calctext').html(str);
 
                         var coinCount = 1000;
-                        var _s = '国内' + coinCount + '个币转到国外:(' + coinCount + '*' + Number(data.pData.tobtcprice).toFixed(8) + '*' + Number(data.chbtcBTCPrice.ticker.buy) + ') / ' + Number(data.chbtcData.ticker.buy)
-                        var _sum = (coinCount * Number(data.pData.tobtcprice).toFixed(8) * Number(data.chbtcBTCPrice.ticker.buy) ) / Number(data.chbtcData.ticker.buy);
+                        var _s = '国内' + coinCount + '个币转到国外:(' + coinCount + '*' + Number(data.pData.tobtcprice).toFixed(8) + '*' + Number(data.chbtcBTCPrice.ticker.buy) + ') / ' + Number(data.chbtcData.ticker.sell)
+                        var _sum = (coinCount * Number(data.pData.tobtcprice).toFixed(8) * Number(data.chbtcBTCPrice.ticker.buy) ) / Number(data.chbtcData.ticker.sell);
                         _sum = _sum.toFixed(3);
                         var _cj = ((1 - coinCount / _sum) * 100).toFixed(3);
                         _s = _s + ' = ' + _sum;

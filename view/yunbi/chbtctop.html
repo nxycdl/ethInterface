@@ -63,7 +63,8 @@
 <div class="btcinfo">
     <p>当前比特币美元价格: <span id="btcusd"></span></p>
     <p>当前比特币人民币价格: <span id="btccny"></span></p>
-    <p>当前CHBTC 人民价格: <span id="chbtcPrice"></span><span id="chbtcPricebl" style="color: #4ab7ec"></span></p>
+    <p>当前CHBTC 人民价格(买): <span id="chbtcPriceBuy"></span><span id="chbtcPricebl" style="color: #4ab7ec"></span></p>
+    <p>当前CHBTC 人民价格(卖): <span id="chbtcPriceSell">
     <p>预&nbsp;&nbsp;投&nbsp;&nbsp;入: <span id="calctext"></span></p>
     <p>预&nbsp;&nbsp;投&nbsp;&nbsp;入: <span id="calctext2"></span><span id="sjcx" class="down"></span></p>
     <p>预&nbsp;&nbsp;投&nbsp;&nbsp;入: <span>合理的条件:国内BTC上涨,并且{{market}}下跌符合搬砖条件</span></p>
@@ -139,7 +140,8 @@
                     showInfo = true;
                     var _currentpoloniex = Number(data.pData.currencyprice).toFixed(8);
                     var _currentChbtc = Number(data.chbtcData.ticker.sell);
-                    var _currentChbtcPrice = Number(data.chbtcBTCPrice.ticker.sell);
+                    var _currentChbtcPrice = Number(data.chbtcBTCPrice.ticker.buy);
+                    var _currentChbtcPriceSell = Number(data.chbtcBTCPrice.ticker.sell);
                     if (_currentpoloniex > $('#currentpoloniex').html()) {
                         setTimeout(function () {
                             $('#currentpoloniex').css('color', '#17cc5f');
@@ -169,6 +171,7 @@
                     $('#btcusd').html(data.pData.btcusdprice);
                     $('#btccny').html(data.pData.btccny);
                     $('#chbtcPrice').html(_currentChbtcPrice);
+                    $('#chbtcPriceSell').html(_currentChbtcPriceSell);
                     $('#chbtcPricebl').html('&#9;&#9;当前差价率:' + (Number((_currentChbtcPrice - data.pData.btccny) / _currentChbtcPrice * 100).toFixed(4)) + '%');
 
                     if (pCoinList.length > size) {

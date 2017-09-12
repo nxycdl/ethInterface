@@ -30,7 +30,7 @@ module.exports = function (self) {
 
             return _.biz.outjson('0000', '', result);
         },
-        getOrdersIgnoreTradeType: function*(market) {
+        getUnfinishedOrdersIgnoreTradeType: function*(market) {
             market = market + '_cny';
             var url ='https://trade.chbtc.com/api/getUnfinishedOrdersIgnoreTradeType?';
             var params= 'method=getUnfinishedOrdersIgnoreTradeType&accesskey='+C.CHBTC_ACCESS_KEY+'&currency='+market+'&pageIndex=1&pageSize=20';

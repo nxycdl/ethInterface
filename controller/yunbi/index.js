@@ -111,13 +111,14 @@ module.exports = {
 
         var _chbtcPriceData = {}
         console.time('chbtc');
-        _chbtcPriceData = yield this.chBtcService.getTickers(options.market);
+        _chbtcPriceData = yield this.chBtcService.getChbtcTickers(options.market);
+        console.log('CHBTCDATA',_chbtcPriceData);
         if (G['CHBTCPRICE'] == undefined) {
             G['CHBTCPRICE'] = {};
         }
         var _chbtcBTCPrice = G['CHBTCPRICE'][_currentTime];
         if (_chbtcBTCPrice == undefined) {
-            _chbtcBTCPrice = yield this.chBtcService.getTickers('btc');
+            _chbtcBTCPrice = yield this.chBtcService.getChbtcTickers('btc');
             G['CHBTCPRICE'][_currentTime] = _chbtcBTCPrice;
         } else {
             console.log('缓存获取_chbtcBTCPrice');
@@ -129,33 +130,28 @@ module.exports = {
                 G['CHBTCPRICE'] == undefined;
             }
         }
-        // console.log(G['CHBTCPRICE'] );
+
 
         console.timeEnd('chbtc');
-        /*var _pData = {
-         btcusdprice: _pBTCUSD,
-         tobtcprice: _PBtcPrice,
-         usdcny: options.usdcny,
-         btccny: (Number(options.usdcny) * _pBTCUSD ).toFixed(6),
-         currencyprice: (Number(options.usdcny) * _pBTCUSD * _PBtcPrice ).toFixed(6),
-         }*/
+
         var poloniexData = yield this.poloniexService.getPloniexTickers();
         poloniexData = JSON.parse(poloniexData.body);
         poloniexData = JSON.parse(poloniexData.body);
         var _marketData = poloniexData['BTC_' + options.market.toUpperCase()];
         var _ustdBTC = poloniexData['USDT_BTC'];
         console.log("**************************************");
-        console.log(_marketData);
-        //console.log(_ustdBTC);
+        //console.log(_marketData);
+        console.log(_ustdBTC);
         console.log("**************************************");
 
         _pData = {
             btcusdbuyprice: _ustdBTC.highestBid,
-            btcusdsellprice: _ustdBTC.last,
-            seller: _marketData.last,
+            btcusdsellprice: _ustdBTC.lowestAsk,
+            seller: _marketData.lowestAsk,
             buy: _marketData.highestBid
         }
-
+        console.log('seller'+_marketData.lowestAsk);
+        console.log('buy'+_ustdBTC.highestBid);
         console.log(_pData);
 
         if (_chbtcPriceData.code === '0000') {

@@ -61,9 +61,10 @@
     </ul>
 </div>-->
 <div class="btcinfo">
-    <p>当前比特币美元价格: <span id="btcusd"></span></p>
+    <p>当前P网比特币美元价格卖: <span id="p_btcustd_sell"></span><span id="p_btccny_sell"></span></p>
+    <p>当前P网比特币美元价格买: <span id="p_btcustd_buy"></span><span id="p_btccny_buy"></span></p>
     <p>当前比特币人民币价格: <span id="btccny"></span></p>
-    <p>当前CHBTC 人民价格(买): <span id="chbtcPrice"></span><span id="chbtcPricebl" style="color: #4ab7ec"></span></p>
+    <p>当前CHBTC 人民价格(买): <span id="chbtcPriceBuy"></span><span id="chbtcPricebl" style="color: #4ab7ec"></span></p>
     <p>当前CHBTC 人民价格(卖): <span id="chbtcPriceSell">
     <p>预&nbsp;&nbsp;投&nbsp;&nbsp;入: <span id="calctext"></span></p>
     <p>预&nbsp;&nbsp;投&nbsp;&nbsp;入: <span id="calctext2"></span><span id="sjcx" class="down"></span></p>
@@ -77,8 +78,10 @@
         <p>
             当前价格
         </p>
-        <p id="currentpoloniex"></p>
-        <p id="currentpoloniexBtc"></p>
+        <p id="p_market_cny_sell"></p>
+        <p id="p_market_cny_buy"></p>
+        <p id="p_market_btc_sell"></p>
+        <p id="p_market_btc_buy"></p>
     </div>
     <div class="mid">
         <div>
@@ -106,6 +109,7 @@
         if (limit == undefined) {
             limit = 2;
         }
+        var p_market_btc_sell_last = 0;
 
         console.log(limit,time);
 
@@ -138,12 +142,32 @@
                 url: url,
                 success: function (data) {
                     console.log(data);
-                    showInfo = true;
-                    var _currentpoloniex = Number(data.pData.currencyprice).toFixed(8);
-                    var _currentChbtc = Number(data.chbtcData.ticker.sell);
-                    var _currentChbtcPrice = Number(data.chbtcBTCPrice.ticker.buy);
-                    var _currentChbtcPriceSell = Number(data.chbtcBTCPrice.ticker.sell);
-                    if (_currentpoloniex > $('#currentpoloniex').html()) {
+                    showInfo = false;
+                    var _p_btcustd_buy = Number(data.pData.btcusdbuyprice).toFixed(8);
+                    var _p_btcustd_sell = Number(data.pData.btcusdsellprice).toFixed(8);
+                    var _p_btccny_sell = (_p_btcustd_buy *　usdcny).toFixed(3); ;
+                    var _p_btccny_buy = (_p_btcustd_sell *　usdcny).toFixed(3) ;
+
+                    $('#p_btcustd_sell').html('&nbsp&nbsp&nbsp&nbsp' + _p_btcustd_sell);
+                    $('#p_btccny_sell').html('&nbsp&nbsp&nbsp&nbsp' + _p_btccny_sell);
+                    $('#p_btcustd_buy').html('&nbsp&nbsp&nbsp&nbsp' + _p_btcustd_buy);
+                    $('#p_btccny_buy').html('&nbsp&nbsp&nbsp&nbsp' + _p_btccny_buy);
+
+                    //当前卖价;
+                    var _chbtc_market_sell = Number(data.chbtcData.ticker.sell);
+                    //当前买价;
+                    var _chbtc_marketbuy = Number(data.chbtcData.ticker.buy);
+                    var _chbtc_btccny_buy = Number(data.chbtcBTCPrice.ticker.buy);
+                    var _chbtc_btccny_sell = Number(data.chbtcBTCPrice.ticker.sell);
+
+                    //p网人民币价格和BTC价格;
+
+                    var p_market_btc_sell = Number(data.pData.seller).toFixed(8);
+                    var p_market_btc_buy = Number(data.pData.buy).toFixed(8);
+                    var p_market_cny_sell = (p_market_btc_sell * usdcny).toFixed(3);
+                    var p_market_cny_buy = (p_market_btc_sell * usdcny).toFixed(3);
+
+                    if (p_market_btc_sell > p_market_btc_sell_last ) {
                         setTimeout(function () {
                             $('#currentpoloniex').css('color', '#17cc5f');
                         }, 800)
@@ -151,19 +175,16 @@
                             $('#currentpoloniex').css('color', '#cc4a24');
                         }, 1500)
                     }
-                    $('#currentpoloniex').html(_currentpoloniex);
-                    $('#currentpoloniexBtc').html('TOBTC:' + Number(data.pData.tobtcprice).toFixed(8));
-                    if (_currentChbtc > $('#currentChbtc').html()) {
-                        setTimeout(function () {
-                            $('#currentChbtc').css('color', '#ccc');
-                        }, 800)
-                        setTimeout(function () {
-                            $('#currentChbtc').css('color', '#cc4a24');
-                        }, 1500)
+                    p_market_btc_sell_last = p_market_btc_sell;
 
-                    }
+                    $('#p_market_btc_sell').html('卖'+p_market_btc_sell);
+                    $('#p_market_btc_buy').html('买'+p_market_btc_buy);
+                    $('#p_market_cny_buy').html('买'+p_market_cny_buy);
+                    $('#p_market_cny_sell').html('卖'+p_market_cny_sell);
 
-                    $('#currentChbtc').html(_currentChbtc);
+
+
+                    /*$('#currentChbtc').html(_currentChbtc);
                     chbtcList.push(_currentChbtc);
                     pCoinList.push(_currentpoloniex)
                     currentSub = (Number((_currentChbtc - _currentpoloniex  ) / _currentChbtc) * 100 ).toFixed(3);
@@ -183,7 +204,7 @@
                     }
                     if (subList.length > size) {
                         subList.shift();
-                    }
+                    }*/
 
 
                     min = ( min == 0 ? data.chbtcData.ticker.sell : min);
@@ -213,7 +234,7 @@
                         }
                     }
 
-                    option = {
+                    /*option = {
                         title: {
                             text: '走势图[ ' + market + ' ]',
                             subtext: ''
@@ -287,8 +308,8 @@
                                 }
                             }
                         ]
-                    };
-                    myChart.setOption(option);
+                    };*/
+                    //myChart.setOption(option);
 
                 },
                 error: function (data) {

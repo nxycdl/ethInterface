@@ -243,7 +243,7 @@ module.exports = function (root, kpath) {
     var autoListenerOrder = new CronJob(
         '*/5 * * * * *',
         function () {
-            co(cronService.autoListenerOrder());
+            //co(cronService.autoListenerOrder());
         },
         false,
         "Asia/Shanghai"
@@ -252,7 +252,7 @@ module.exports = function (root, kpath) {
     var saveAllYunBiTicketCron = new CronJob(
         '*/2 * * * * *',
         function () {
-            co(cronService.saveAllYunBiTicket());
+            //co(cronService.saveAllYunBiTicket());
         },
         false,
         "Asia/Shanghai"
@@ -261,7 +261,7 @@ module.exports = function (root, kpath) {
     var autoListenerChbtcOrder = new CronJob(
         '*/2 * * * * *',
         function () {
-            co(cronService.autoListenerMyChbtcOrder());
+            //co(cronService.autoListenerMyChbtcOrder());
         },
         false,
         "Asia/Shanghai"

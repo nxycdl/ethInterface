@@ -200,7 +200,7 @@ module.exports = {
         }
 
         var _result = {pData: _pData, chbtcData: _chbtcPriceData, chbtcBTCPrice: _chbtcBTCPrice};
-        yield  this.yunbiService.savePDataChbtcData(options.market, _pData, _chbtcPriceData);
+        // yield  this.yunbiService.savePDataChbtcData(options.market, _pData, _chbtcPriceData);
         var _currentpoloniex = Number(_pData.currencyprice);
         var _currentChbtc = Number(_chbtcPriceData.ticker.sell);
         if (_currentChbtc == 0) {

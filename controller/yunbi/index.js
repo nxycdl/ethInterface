@@ -112,7 +112,7 @@ module.exports = {
         var _chbtcPriceData = {}
         console.time('chbtc');
         _chbtcPriceData = yield this.chBtcService.getChbtcTickers(options.market);
-        console.log('CHBTCDATA',_chbtcPriceData);
+        console.log('CHBTCDATA', _chbtcPriceData);
         if (G['CHBTCPRICE'] == undefined) {
             G['CHBTCPRICE'] = {};
         }
@@ -150,8 +150,8 @@ module.exports = {
             seller: _marketData.lowestAsk,
             buy: _marketData.highestBid
         }
-        console.log('seller'+_marketData.lowestAsk);
-        console.log('buy'+_ustdBTC.highestBid);
+        console.log('seller' + _marketData.lowestAsk);
+        console.log('buy' + _ustdBTC.highestBid);
         console.log(_pData);
 
         if (_chbtcPriceData.code === '0000') {
@@ -189,26 +189,26 @@ module.exports = {
         var currentSub = (Number((_currentChbtc - _currentpoloniex  ) / _currentChbtc) * 100 ).toFixed(3);
         console.log('当前' + options.market + '差价:' + currentSub);
         /*if (Math.abs(currentSub) >= 3.5 && options.send == '1') {
-            var key = options.market + '_diff_' + _currentTime.substr(0, 16);
-            var _dateM = M.moment().format('YYYY-MM-DD HH:mm');
-            if (G[key] == undefined) {
-                G[key] = {
-                    _dateM: 0
-                }
-            }
-            //一分钟发的超过10次不在发送;
-            var newDate = new Date();
+         var key = options.market + '_diff_' + _currentTime.substr(0, 16);
+         var _dateM = M.moment().format('YYYY-MM-DD HH:mm');
+         if (G[key] == undefined) {
+         G[key] = {
+         _dateM: 0
+         }
+         }
+         //一分钟发的超过10次不在发送;
+         var newDate = new Date();
 
-            if (G[key][_dateM] == undefined) {
-                G[key][_dateM] = 0;
-            }
-            if (G[key][_dateM] > 4) {
-                return;
-            }
-            G[key][_dateM] = (G[key][_dateM]) + 1;
-            var _data = yield this.messageService.sendBTCDiffMessage(_currentTime + '  P网到CHBTC', '差价到达' + currentSub + '%', '币种:' + options.market + ',CHBTC=' + _currentChbtc.toFixed(3) + ',polniex=' + _currentpoloniex.toFixed(3))
+         if (G[key][_dateM] == undefined) {
+         G[key][_dateM] = 0;
+         }
+         if (G[key][_dateM] > 4) {
+         return;
+         }
+         G[key][_dateM] = (G[key][_dateM]) + 1;
+         var _data = yield this.messageService.sendBTCDiffMessage(_currentTime + '  P网到CHBTC', '差价到达' + currentSub + '%', '币种:' + options.market + ',CHBTC=' + _currentChbtc.toFixed(3) + ',polniex=' + _currentpoloniex.toFixed(3))
 
-        }*/
+         }*/
         this.body = _result;
 
     },
@@ -229,23 +229,52 @@ module.exports = {
     getBfpData: function*() {
         var options = this.query;
         var market = options.market;
+        var keybtc = 'tBTCUSD';
         var key1 = 't' + market.toUpperCase() + 'BTC';
         var key = 'BTC_' + market.toUpperCase();
-        //var bitfinexData = yield this.bitfinexService.getTickers(key1);
-        //console.log('1235', poloniexData.body);
+        var bitfinexData = yield this.bitfinexService.getTickers(keybtc + ',' + key1);
+        console.log('1235', bitfinexData.body);
+        bitfinexData = JSON.parse(bitfinexData.body);
+        var bitfinexBtc ={
+            symbol :bitfinexData[0][0],
+            bid :bitfinexData[0][1],
+            bid_size :bitfinexData[0][2],
+            ask :bitfinexData[0][3],
+            ask_size :bitfinexData[0][4],
+            daily_change :bitfinexData[0][5],
+            daily_change_perc :bitfinexData[0][6],
+            last_price :bitfinexData[0][7],
+            volume :bitfinexData[0][8],
+            high :bitfinexData[0][9],
+            low:bitfinexData[0][10]
+        }
+        var bifindexmarket = {
+            symbol :bitfinexData[1][0],
+            bid :bitfinexData[1][1],
+            bid_size :bitfinexData[1][2],
+            ask :bitfinexData[1][3],
+            ask_size :bitfinexData[1][4],
+            daily_change :bitfinexData[1][5],
+            daily_change_perc :bitfinexData[1][6],
+            last_price :bitfinexData[1][7],
+            volume :bitfinexData[1][8],
+            high :bitfinexData[1][9],
+            low:bitfinexData[1][10]
+        }
         console.log('开始调用P网接口');
         var poloniexData = yield this.poloniexService.getPloniexTickers();
         poloniexData = JSON.parse(poloniexData.body);
-        console.log(poloniexData);
         poloniexData = JSON.parse(poloniexData.body);
-
-        poloniexData = poloniexData[key];
-
-
+        var poloniexmarket = poloniexData[key];
+        var poloniexBtc = poloniexData['USDT_BTC'];
+        console.log('返回结果:');
         var data = {
-            //bitfinexData: bitfinexData,
-            poloniexData: poloniexData
+            bitfinexBtc: bitfinexBtc,
+            bifindexmarket: bifindexmarket,
+            poloniexBtc: poloniexBtc,
+            poloniexmarket: poloniexmarket
         }
+        console.log(data);
         console.log('end');
         this.body = data;
     }

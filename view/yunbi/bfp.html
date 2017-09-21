@@ -5,11 +5,98 @@
     <title>BitFindx And P Data</title>
     <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 </head>
-<body>
+<style>
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        margin-right: auto;
+        margin-left: auto;
+        width: 800px;
+    }
 
+    th, td {
+        border: 1px solid #b5d6e6;
+        font-size: 12px;
+        font-weight: normal;
+        text-align: center;
+        vertical-align: middle;
+        height: 20px;
+    }
+
+    th {
+        background-color: Gray;
+    }
+
+    .odd {
+        background-color: #bbf;
+    }
+
+    .even {
+        background-color: #ffc;
+    }
+    .red {
+        background-color: crimson;
+    }
+</style>
+<body>
+<table id="table1">
+    <tr>
+        <th style="width: 160px;">表头一</th>
+        <th style="width: 160px;">买</th>
+        <th style="width: 160px;">卖</th>
+        <th style="width: 160px;">买差价</th>
+        <th style="width: 160px;">卖差价</th>
+    </tr>
+    <tr>
+        <td>P网BTC</td>
+        <td>P网</td>
+        <td>BFBTC</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+</table>
 </body>
 <script>
     $(function () {
+        $("#table1 tbody tr:odd").addClass("odd");
+        $("#table1 tbody tr:even").addClass("even");
+        $("#table1 tr > td:eq(1)").html('xxxxx-1');
+        $("#table1 tr:gt(0):eq(1) td:eq(2)").html('qqdd0');
+        $("#table1 tr:gt(1):eq(1) td:eq(2)").html('qqdd1');
+        $("#table1 tr:gt(2):eq(1) td:eq(2)").html('qqdd2');
+        $("#table1 tr:gt(3):eq(1) td:eq(0)").html('合计');
+        var _last ={
+            lastbuyCj:0,
+            lastSellCj:0,
+        }
         market = '{{market}}';
         console.log(market);
         var url = 'getbfpData';
@@ -19,18 +106,70 @@
                 url: url + '?market=' + market,
                 success: function (data) {
                     console.log(data);
+                    showInfo(data);
                 }
             });
         }
 
-        function showInfo() {
+        function showInfo(data) {
+            //P网比特币价格;
+            var poloniexBtc = data.poloniexBtc;
+            $("#table1 tr > td:eq(1)").html(poloniexBtc.highestBid);
+            $("#table1 tr > td:eq(2)").html(poloniexBtc.lowestAsk);
+            //BF比特币价格;
+            var bitfinexBtc = data.bitfinexBtc;
+            $("#table1 tr:gt(0):eq(1) td:eq(0)").html('BF BTC');
+            $("#table1 tr:gt(0):eq(1) td:eq(1)").html(bitfinexBtc.bid);
+            $("#table1 tr:gt(0):eq(1) td:eq(2)").html(bitfinexBtc.ask);
+            $("#table1 tr:gt(0):eq(1) td:eq(3)").html(((poloniexBtc.highestBid-bitfinexBtc.ask)/bitfinexBtc.ask * 100).toFixed(3) + '%');
+            $("#table1 tr:gt(0):eq(1) td:eq(4)").html(((poloniexBtc.lowestAsk-bitfinexBtc.ask)/bitfinexBtc.ask * 100).toFixed(3) + '%');
+            //P价格;
+            var poloniexmarket = data.poloniexmarket;
+            $("#table1 tr:gt(1):eq(1) td:eq(0)").html('P网 '+market);
+            $("#table1 tr:gt(1):eq(1) td:eq(1)").html(poloniexmarket.highestBid);
+            $("#table1 tr:gt(1):eq(1) td:eq(2)").html(poloniexmarket.lowestAsk);
+            $("#table1 tr:gt(1):eq(1) td:eq(3)").html('');
+            $("#table1 tr:gt(1):eq(1) td:eq(4)").html('');
+            //BF价格;
+            var bifindexmarket = data.bifindexmarket;
+            $("#table1 tr:gt(2):eq(1) td:eq(0)").html('BF '+market);
+            $("#table1 tr:gt(2):eq(1) td:eq(1)").html(bifindexmarket.bid);
+            $("#table1 tr:gt(2):eq(1) td:eq(2)").html(bifindexmarket.ask);
+            var _buycj = ((poloniexmarket.highestBid-bifindexmarket.ask)/bifindexmarket.ask * 100).toFixed(3) ;
+            var _sellcj = ((poloniexmarket.lowestAsk-bifindexmarket.ask)/bifindexmarket.ask * 100).toFixed(3);
+            $("#table1 tr:gt(2):eq(1) td:eq(3)").html(_buycj + '%');
+            $("#table1 tr:gt(2):eq(1) td:eq(4)").html(_sellcj + '%');
+            if (_buycj > _last.lastbuyCj) {
+                //变色;
+                setTimeout(function () {
+                    $("#table1 tr:gt(2):eq(1) td:eq(3)").addClass('red')
+                }, 800)
+                setTimeout(function () {
+                    $("#table1 tr:gt(2):eq(1) td:eq(3)").removeClass('red')
+                }, 1500)
+            }
+            if (_sellcj > _last.lastSellCj) {
+                //变色;
+                setTimeout(function () {
+                    $("#table1 tr:gt(2):eq(1) td:eq(4)").addClass('red')
+                }, 800)
+                setTimeout(function () {
+                    $("#table1 tr:gt(2):eq(1) td:eq(4)").removeClass('red')
+                }, 1500)
+            }
 
+
+            _last.lastbuyCj = _buycj;
+            _last.lastSellCj = _sellcj;
         }
 
-        setTimeout(function () {
+
+
+        setInterval(function () {
             getData();
-            showInfo();
         }, 2000);
+
+
     });
 </script>
 </html>

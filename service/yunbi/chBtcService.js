@@ -5,7 +5,7 @@ const secret_key = '4b41f9b5-5a1a-4f52-bf3a-147cad90350b';
 const access_key = '879042e6-52ef-4e60-8408-6ab918ba32e1';
 module.exports = function (self) {
     return {
-        getTickers: function*(market) {
+        getChbtcTickers: function*(market) {
             market = market + '_cny';
             var url = 'http://api.chbtc.com/data/v1/ticker?currency=' + market;
             var result = {

@@ -179,8 +179,8 @@ module.exports = function (root, kpath) {
         //每天08点02分发送一次;
         '*/10 * * * * *',
         function () {
-             // co(cronService.autoBuss());
-             // co(cronService.checBuss());
+            // co(cronService.autoBuss());
+            // co(cronService.checBuss());
         },
         false,
         "Asia/Shanghai"
@@ -214,7 +214,7 @@ module.exports = function (root, kpath) {
 
     //网络爬虫;
     var netPull = new CronJob(
-         '0 */3 * * * *',
+        '0 */3 * * * *',
         // '*/5 * * * * *',
         function () {
             co(cronService.startRequestEthPool());

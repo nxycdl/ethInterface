@@ -5,8 +5,10 @@ var loadsh = require('lodash');
 var moment = require('moment');
 var _=loadsh;
 var a = '11';
-console.log(_.isEmpty(a));
 
-console.log(moment(1501913217244).format('YYYY-MM-DD HH:mm:ss'));
 
+
+var arr = [1,2,3,4,5,6,7,8,9,'a','b','c','d'];
+console.log(arr.slice(5,arr.length));
+console.log(arr);
 

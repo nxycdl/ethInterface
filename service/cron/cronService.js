@@ -431,7 +431,7 @@ module.exports = {
         var _hour = Number(M.moment().format('HH'));
         if (_hour > 0 && _hour < 6) {
             //半夜不发消息;
-            return;
+            return
         }
         console.log(params);
         const accessKeyId = C.alismsaccessKeyId;

@@ -232,41 +232,47 @@ module.exports = {
         var keybtc = 'tBTCUSD';
         var key1 = 't' + market.toUpperCase() + 'BTC';
         var key = 'BTC_' + market.toUpperCase();
+        console.log(keybtc + ',' + key1);
         var bitfinexData = yield this.bitfinexService.getTickers(keybtc + ',' + key1);
-
+        console.log('1');
+        // console.log(bitfinexData);
         bitfinexData = JSON.parse(bitfinexData.body);
 
-        var bitfinexBtc ={
-            symbol :bitfinexData[0][0],
-            bid :bitfinexData[0][1],
-            bid_size :bitfinexData[0][2],
-            ask :bitfinexData[0][3],
-            ask_size :bitfinexData[0][4],
-            daily_change :bitfinexData[0][5],
-            daily_change_perc :bitfinexData[0][6],
-            last_price :bitfinexData[0][7],
-            volume :bitfinexData[0][8],
-            high :bitfinexData[0][9],
-            low:bitfinexData[0][10]
+        var bitfinexBtc = {
+            symbol: bitfinexData[0][0],
+            bid: bitfinexData[0][1],
+            bid_size: bitfinexData[0][2],
+            ask: bitfinexData[0][3],
+            ask_size: bitfinexData[0][4],
+            daily_change: bitfinexData[0][5],
+            daily_change_perc: bitfinexData[0][6],
+            last_price: bitfinexData[0][7],
+            volume: bitfinexData[0][8],
+            high: bitfinexData[0][9],
+            low: bitfinexData[0][10]
         }
         var bifindexmarket = {
-            symbol :bitfinexData[1][0],
-            bid :bitfinexData[1][1],
-            bid_size :bitfinexData[1][2],
-            ask :bitfinexData[1][3],
-            ask_size :bitfinexData[1][4],
-            daily_change :bitfinexData[1][5],
-            daily_change_perc :bitfinexData[1][6],
-            last_price :bitfinexData[1][7],
-            volume :bitfinexData[1][8],
-            high :bitfinexData[1][9],
-            low:bitfinexData[1][10]
+            symbol: bitfinexData[1][0] || 0,
+            bid: bitfinexData[1][1] || 0,
+            bid_size: bitfinexData[1][2] || 0,
+            ask: bitfinexData[1][3] || 0,
+            ask_size: bitfinexData[1][4] || 0,
+            daily_change: bitfinexData[1][5] || 0,
+            daily_change_perc: bitfinexData[1][6] || 0,
+            last_price: bitfinexData[1][7] || 0,
+            volume: bitfinexData[1][8] || 0,
+            high: bitfinexData[1][9] || 0,
+            low: bitfinexData[1][10] || 0
         }
         console.log('开始调用P网接口');
         var poloniexData = yield this.poloniexService.getPloniexTickers();
         poloniexData = JSON.parse(poloniexData.body);
         poloniexData = JSON.parse(poloniexData.body);
         var poloniexmarket = poloniexData[key];
+        console.log(poloniexmarket,poloniexmarket==undefined);
+        if (poloniexmarket == undefined) {
+            poloniexmarket = { symbol: key, bid:0 , bid_size:0 , ask:0 , ask_size:0 , daily_change:0 , daily_change_perc:0 , last_price:0 , volume:0 , high:0 , low:0 }
+        }
         var poloniexBtc = poloniexData['USDT_BTC'];
         console.log('返回结果:');
         var data = {

@@ -232,13 +232,7 @@ module.exports = {
         var keybtc = 'tBTCUSD';
         var key1 = 't' + market.toUpperCase() + 'BTC';
         var key = 'BTC_' + market.toUpperCase();
-        console.log(keybtc + ',' + key1);
         var bitfinexData = yield this.bitfinexService.getTickers(keybtc + ',' + key1);
-<<<<<<< HEAD
-=======
-        console.log('1');
-        // console.log(bitfinexData);
->>>>>>> 852148156700fe97d392334f19fd86f6581e49fd
         bitfinexData = JSON.parse(bitfinexData.body);
 
         var bitfinexBtc = {

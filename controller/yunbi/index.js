@@ -266,9 +266,21 @@ module.exports = {
         poloniexData = JSON.parse(poloniexData.body);
         poloniexData = JSON.parse(poloniexData.body);
         var poloniexmarket = poloniexData[key];
-        console.log(poloniexmarket,poloniexmarket==undefined);
+        console.log(poloniexmarket, poloniexmarket == undefined);
         if (poloniexmarket == undefined) {
-            poloniexmarket = { symbol: key, bid:0 , bid_size:0 , ask:0 , ask_size:0 , daily_change:0 , daily_change_perc:0 , last_price:0 , volume:0 , high:0 , low:0 }
+            poloniexmarket = {
+                symbol: key,
+                bid: 0,
+                bid_size: 0,
+                ask: 0,
+                ask_size: 0,
+                daily_change: 0,
+                daily_change_perc: 0,
+                last_price: 0,
+                volume: 0,
+                high: 0,
+                low: 0
+            }
         }
         var poloniexBtc = poloniexData['USDT_BTC'];
         console.log('返回结果:');
@@ -281,6 +293,11 @@ module.exports = {
         console.log(data);
         console.log('end');
         this.body = data;
+    },
+    zecmointor: function*() {
+        var params = this.request.body;
+        console.log(params);
+        this.body = {ret: true};
     }
 
 

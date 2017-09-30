@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ZEC监控</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0-beta/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css">
+
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.0/extensions/export/bootstrap-table-export.min.js"></script>
+    <!--<script src="${basePath}/js/plugins/bootstrap-table/tableExport.js"></script>-->
+</head>
+
+<body>
+    <div class="container" style="width: 100%">
+        <table id="demo-table">
+        </table>
+    </div>
+</body>
+<script type="text/javascript">
+    $(function () {
+        initTable();
+        initDate();
+    });
+
+    function doQuery(params){
+        $('#demo-table').bootstrapTable('refresh');    //刷新表格
+    }
+
+</script>
+</html>

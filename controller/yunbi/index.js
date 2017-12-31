@@ -296,7 +296,48 @@ module.exports = {
     },
     zecmointor: function*() {
         var params = this.request.body;
+        params = JSON.parse(params);
+
+        if (G.zecmointor === undefined) {
+            G.zecmointor = {}
+        }
+
+        if (G.zecmointor[params.name] === undefined) {
+            G.zecmointor[params.name] = {}
+        }
+
         console.log(params);
+        G.zecmointor[params.name]['name'] = params.name;
+        G.zecmointor[params.name]['ip'] = params.ip;
+        G.zecmointor[params.name]['totalSpeed'] = params.info.totalSpeed.info;
+        G.zecmointor[params.name]['date'] = params.info.totalSpeed.date || '';
+        var gpu = params.info.gpu.info;
+
+        gpu = gpu.split('\r');
+        gpu.forEach(function (item, index) {
+            if (item != '') {
+                var list = item.split(":");
+                G.zecmointor[params.name][list[0]] = (list[1]).trim();
+            }
+        });
+        var tmpGpu = params.info.tempgpu.info;
+
+        tmpGup = tmpGpu.split('\r');
+        tmpGup.forEach(function (item, index) {
+
+
+            if (item != '') {
+                item = item.replace('Temp: ', '').trim();
+                console.log('1', item);
+                var list = item.split(" ");
+                var key = 'T' + (list[0]);
+                var value = (list[1]).trim();
+                G.zecmointor[params.name][key] = value;
+            }
+        })
+
+        console.log(G.zecmointor);
+
         this.body = {ret: true};
     },
     getOrdersIgnoreTradeType: function*() {
@@ -304,6 +345,13 @@ module.exports = {
         console.log(options);
         const data = yield this.chBtcService.getOrdersNew(options.market, options.pageIndex, options.pageSize);
         console.log(data);
+    },
+    zecmointorPage: function*() {
+        var options = this.query;
+        this.body = yield this.render('yunbi/zecmointorPage', options);
+    },
+    zecmointorDetail: function*() {
+        this.body = G.zecmointor;
     }
 
 

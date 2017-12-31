@@ -15,7 +15,7 @@
 </head>
 <body>
 <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-<div id="main" style="width: 100%;height:400px;"></div>
+<div id="main" style="width: 100%;height:400px;top:60px"></div>
 <div id="info" style="width: 100%;height:80px;">
     <ul>
         <li id="content">
@@ -27,7 +27,7 @@
 </div>
 <div id="foot">
     <div>http://127.0.0.1:7001/binance/index/kline?market=LSKBTC&interval=30m</div>
-    <div>可选默认 1m , 30m , 1h , 4h ,12h,1d </div>
+    <div>可选默认 1m , 30m , 1h , 4h ,12h,1d</div>
 </div>
 <script>
     $(function () {
@@ -36,7 +36,7 @@
             console.log(market);
             var rawData = '{{rowData}}';
             //console.log(rawData);
-            rawData = JSON.parse(rawData.replace(/&quot;/g,'"')) ;
+            rawData = JSON.parse(rawData.replace(/&quot;/g, '"'));
             console.log(rawData);
 
             function calculateMA(dayCount, data) {

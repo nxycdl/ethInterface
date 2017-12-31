@@ -732,15 +732,16 @@ module.exports = {
                         low = low * G.binance.btc;
                     }
                     values.push(symbol);
-                    values.push(M.moment(endTime).format('YYYY-MM-DD HH:mm'));
-                    values.push(open);
-                    values.push(close);
-                    values.push(high);
-                    values.push(low);
+                    values.push(M.moment(endTime).format('YYYY-MM-DD HH:mm:ss'));
+                    values.push(parseFloat(open).toFixed(10));
+                    values.push(parseFloat(close).toFixed(10));
+                    values.push(parseFloat(high).toFixed(10));
+                    values.push(parseFloat(low).toFixed(10));
                     values.push(volume);
+                    values.push(interval);
                 }
 
-                const sql = 'insert into binaner (market,startTime,open,close,high,low,volume) values(?,?,?,?,?,?,?),(?,?,?,?,?,?,?),(?,?,?,?,?,?,?),(?,?,?,?,?,?,?),(?,?,?,?,?,?,?)';
+                const sql = 'insert into binaner (market,startTime,open,close,high,low,volume,intval) values(?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?),(?,?,?,?,?,?,?,?)';
                 const params = values;
                 try {
                     var db = M.pool.getConnection();
@@ -760,14 +761,15 @@ module.exports = {
                 }
                 let values = [];
                 values.push(symbol);
-                values.push(M.moment(endTime).format('YYYY-MM-DD HH:mm'));
-                values.push(open);
-                values.push(close);
-                values.push(high);
-                values.push(low);
-                values.push(volume);
+                values.push(M.moment(endTime).format('YYYY-MM-DD HH:mm:ss'));
+                values.push(parseFloat(open).toFixed(10));
+                values.push(parseFloat(close).toFixed(10));
+                values.push(parseFloat(high).toFixed(10));
+                values.push(parseFloat(low).toFixed(10));
+                values.push(volume );
+                values.push(interval);
 
-                const sql = 'insert into binaner (market,startTime,open,close,high,low,volume) values(?,?,?,?,?,?,?)';
+                const sql = 'insert into binaner (market,startTime,open,close,high,low,volume,intval) values(?,?,?,?,?,?,?,?)';
                 const params = values;
                 try {
                     var db = M.pool.getConnection();
@@ -780,7 +782,7 @@ module.exports = {
 
         const listKey = ['BTCUSDT','XRPBTC', 'XVGBTC', 'ETHBTC', 'ADABTC', 'POEBTC', 'TRXBTC', 'XLMBTC', 'IOTABTC', 'BCCBTC', 'NEOBTC', 'LTCBTC', 'QTUMBTC', 'VENBTC', 'HSRBTC', 'FUNBTC', 'LENDBTC', 'ELFBTC', 'STORJBTC', 'ICXBTC', 'BNBBTC', 'EOSBTC', 'CNDBTC', 'QSPBTC', 'TNBBTC', 'MCOBTC', 'MODBTC', 'OMGBTC', 'BTSBTC', 'DASHBTC', 'XMRBTC', 'MANABTC', 'SALTBTC', 'REQBTC', 'ETCBTC', 'LSKBTC', 'BRDBTC', 'ENGBTC', 'AIONBTC', 'SNTBTC', 'WTCBTC', 'ENJBTC', 'ADXBTC', 'STRATBTC', 'OSTBTC', 'BQXBTC', 'TNTBTC', 'ZRXBTC', 'LINKBTC', 'FUELBTC', 'BTGBTC', 'ARKBTC', 'XZCBTC', 'ASTBTC', 'SUBBTC', 'CDTBTC', 'TRIGBTC', 'POWRBTC', 'KMDBTC', 'VIBBTC', 'CTRBTC', 'RCNBTC', 'WINGSBTC', 'GTOBTC', 'WABIBTC', 'BATBTC', 'LRCBTC', 'MTHBTC', 'ZECBTC', 'RDNBTC', 'KNCBTC', 'CMTBTC', 'MTLBTC', 'DNTBTC', 'GASBTC', 'WAVESBTC', 'SNMBTC', 'MDABTC', 'YOYOBTC', 'LUNBTC', 'SNGLSBTC', 'NAVBTC', 'NULSBTC', 'DGDBTC', 'BNTBTC', 'BCPTBTC', 'ICNBTC', 'AMBBTC', 'GXSBTC', 'GVTBTC', 'ARNBTC', 'EVXBTC', 'PPTBTC', 'NEBLBTC', 'BCDBTC', 'EDOBTC', 'OAXBTC', 'DLTBTC'];
         //const listKey = ['BTCUSDT', 'XRPBTC', 'XVGBTC','ADABTC', 'POEBTC', 'TRXBTC', 'XLMBTC', 'IOTABTC'];
-        const interval = '1m';
+
         if (G.startBinance == undefined) {
             G.startBinance = false;
         }
@@ -810,6 +812,102 @@ module.exports = {
                      console.log("close: " + close);
                      console.log("volume: " + volume);*/
                     //console.log("isFinal: " + isFinal);
+                    resolve(candlesticks);
+
+                });
+            });
+
+            var promise30m = new Promise(function (resolve, reject) {
+                binance.websockets.candlesticks(listKey, "30m", function (candlesticks) {
+
+                    let {k: ticks, s: symbol} = candlesticks;
+                    let {x: isFinal, c: close} = ticks;
+                    if (symbol == 'BTCUSDT') {
+                        G.binance = {
+                            btc: close
+                        }
+                    }
+                    if (isFinal) {
+                        if (G.bianceList == undefined) G.bianceList = [];
+                        G.bianceList.push(candlesticks);
+                    }
+                    resolve(candlesticks);
+
+                });
+            });
+
+            var promise1h = new Promise(function (resolve, reject) {
+                binance.websockets.candlesticks(listKey, "1h", function (candlesticks) {
+
+                    let {k: ticks, s: symbol} = candlesticks;
+                    let {x: isFinal, c: close} = ticks;
+                    if (symbol == 'BTCUSDT') {
+                        G.binance = {
+                            btc: close
+                        }
+                    }
+                    if (isFinal) {
+                        if (G.bianceList == undefined) G.bianceList = [];
+                        G.bianceList.push(candlesticks);
+                    }
+                    resolve(candlesticks);
+
+                });
+            });
+
+            var promise4h = new Promise(function (resolve, reject) {
+                binance.websockets.candlesticks(listKey, "4h", function (candlesticks) {
+
+                    let {k: ticks, s: symbol} = candlesticks;
+                    let {x: isFinal, c: close} = ticks;
+                    if (symbol == 'BTCUSDT') {
+                        G.binance = {
+                            btc: close
+                        }
+                    }
+                    if (isFinal) {
+                        if (G.bianceList == undefined) G.bianceList = [];
+                        G.bianceList.push(candlesticks);
+                    }
+                    resolve(candlesticks);
+
+                });
+            });
+
+            var promise12h = new Promise(function (resolve, reject) {
+                binance.websockets.candlesticks(listKey, "12h", function (candlesticks) {
+
+                    let {k: ticks, s: symbol} = candlesticks;
+                    let {x: isFinal, c: close} = ticks;
+                    if (symbol == 'BTCUSDT') {
+                        G.binance = {
+                            btc: close
+                        }
+                    }
+                    if (isFinal) {
+                        if (G.bianceList == undefined) G.bianceList = [];
+                        G.bianceList.push(candlesticks);
+                    }
+                    resolve(candlesticks);
+
+                });
+            });
+
+
+            var promise1d = new Promise(function (resolve, reject) {
+                binance.websockets.candlesticks(listKey, "1d", function (candlesticks) {
+
+                    let {k: ticks, s: symbol} = candlesticks;
+                    let {x: isFinal, c: close} = ticks;
+                    if (symbol == 'BTCUSDT') {
+                        G.binance = {
+                            btc: close
+                        }
+                    }
+                    if (isFinal) {
+                        if (G.bianceList == undefined) G.bianceList = [];
+                        G.bianceList.push(candlesticks);
+                    }
                     resolve(candlesticks);
 
                 });

@@ -18,14 +18,15 @@ module.exports = {
     },
     kline: function*() {
         var options = {
-            market: this.query.market
+            market: this.query.market,
+            interval: this.query.interval || '1m'
         }
-        const sql = 'select * from binaner where market = ? order by startTime ';
+        const sql = 'select * from binaner where market = ? and intval = ? order by startTime ';
         let rowData = [];
 
         var db = M.pool.getConnection();
         try {
-            var data = yield db.query(sql, [options.market]);
+            var data = yield db.query(sql, [options.market, options.interval]);
             data = data[0];
             for (i = 0; i < data.length; i++) {
                 let row = [];

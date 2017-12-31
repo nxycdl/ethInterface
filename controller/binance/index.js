@@ -20,7 +20,6 @@ module.exports = {
         var options = {
             market: this.query.market
         }
-        console.log(options);
         const sql = 'select * from binaner where market = ? order by startTime ';
         let rowData = [];
 
@@ -46,7 +45,6 @@ module.exports = {
             M.pool.releaseConnection(db);
         }
         options.rowData = JSON.stringify(rowData);
-        console.log(rowData);
         this.body = yield this.render("binance/kline", options);
     },
 }

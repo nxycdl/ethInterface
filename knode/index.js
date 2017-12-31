@@ -217,7 +217,7 @@ module.exports = function (root, kpath) {
         '0 */3 * * * *',
         // '*/5 * * * * *',
         function () {
-            co(cronService.startRequestEthPool());
+            //co(cronService.startRequestEthPool());
         },
         false,
         "Asia/Shanghai"
@@ -226,7 +226,7 @@ module.exports = function (root, kpath) {
     var netPullEthOur = new CronJob(
         '0 0 0/1 * * * * ',
         function () {
-            co(cronService.startRequestEthPoolHour());
+            //co(cronService.startRequestEthPoolHour());
         },
         false,
         "Asia/Shanghai"
@@ -267,6 +267,15 @@ module.exports = function (root, kpath) {
         "Asia/Shanghai"
     );
 
+    const listenerBinanceKLine = new CronJob(
+        '*/1 * * * * *',
+        function () {
+            co(cronService.listnerBinaner());
+        },
+        false,
+        "Asia/Shanghai"
+    );
+
 
     jobid.start();
     jobid2.start();
@@ -277,6 +286,7 @@ module.exports = function (root, kpath) {
     autoListenerOrder.start();
     saveAllYunBiTicketCron.start();
     autoListenerChbtcOrder.start();
+    listenerBinanceKLine.start();
 
     setTimeout(function () {
         jobOnce.stop();

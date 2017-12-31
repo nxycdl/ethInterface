@@ -298,6 +298,12 @@ module.exports = {
         var params = this.request.body;
         console.log(params);
         this.body = {ret: true};
+    },
+    getOrdersIgnoreTradeType: function*() {
+        var options = this.query;
+        console.log(options);
+        const data = yield this.chBtcService.getOrdersNew(options.market, options.pageIndex, options.pageSize);
+        console.log(data);
     }
 
 

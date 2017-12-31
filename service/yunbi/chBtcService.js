@@ -120,5 +120,51 @@ module.exports = function (self) {
             console.log(outData);
             return market;
         },
+        getOrdersIgnoreTradeType:function*(market,pageIndex,pageSize){
+            market = market + '_cny';
+            var url =' https://trade.chbtc.com/api/getOrdersIgnoreTradeType?';
+            var params= 'method=getOrdersIgnoreTradeType&accesskey='+C.CHBTC_ACCESS_KEY+'&currency='+market;
+            params += '&pageIndex='+pageIndex+'&pageSize='+pageSize
+            var _singData= _.signChbtc(params);
+            url = url + params +'&sign='+_singData+'&reqTime='+(new Date()).valueOf();
+            try {
+                result = yield M.request({
+                    uri: url,
+                    method: 'get'
+                });
+            } catch (e) {
+                console.log(e);
+                result = {
+                    body: '[]'
+                }
+                return _.biz.outjson('-1', e, []);
+            }
+            var outData  = JSON.parse(result.body);
+            console.log(outData);
+            return market;
+        },
+        getOrdersNew:function*(market,pageIndex,pageSize){
+            market = market + '_cny';
+            var url =' https://trade.chbtc.com/api/getOrdersNew?';
+            var params= 'method=getOrdersNew&accesskey='+C.CHBTC_ACCESS_KEY+'&tradeType=1&currency='+market;
+            params += '&pageIndex='+pageIndex+'&pageSize='+pageSize
+            var _singData= _.signChbtc(params);
+            url = url + params +'&sign='+_singData+'&reqTime='+(new Date()).valueOf();
+            try {
+                result = yield M.request({
+                    uri: url,
+                    method: 'get'
+                });
+            } catch (e) {
+                console.log(e);
+                result = {
+                    body: '[]'
+                }
+                return _.biz.outjson('-1', e, []);
+            }
+            var outData  = JSON.parse(result.body);
+            console.log(outData);
+            return market;
+        }
     }
 }

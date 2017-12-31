@@ -12,3 +12,6 @@ var arr = [1,2,3,4,5,6,7,8,9,'a','b','c','d'];
 console.log(arr.slice(5,arr.length));
 console.log(arr);
 
+var market = 'ltc11btc';
+console.log(market.substr(market.length-3,3));
+

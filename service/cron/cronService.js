@@ -10,7 +10,7 @@ var tickService = require(C.service + 'yunbi/tickService')();
 var netpullService = require(C.service + 'netpull/netpullService')();
 var messageService = require(C.service + 'yunbi/messageService')();
 var yunbiOrderHead = require(C.service + 'yunbi/yunbiOrderHead')();
-
+const binance = require('node-binance-api');
 
 module.exports = {
 
@@ -638,7 +638,7 @@ module.exports = {
         }
         if ((G['dbkey']).length > 200) {
             console.log('xxx', G['dbkey'].length);
-            G['dbkey']  = G['dbkey'] .slice(160, G['dbkey'] .length);
+            G['dbkey'] = G['dbkey'].slice(160, G['dbkey'].length);
         }
 
         for (key in result) {
@@ -688,23 +688,137 @@ module.exports = {
             //console.log(params);
             var data = yield db.query(sql, params);
             this.body = data[0];
-            var insertCount = data[0].affectedRows ;
-            if (insertCount ===0){
+            var insertCount = data[0].affectedRows;
+            if (insertCount === 0) {
                 console.log('true');
             }
-            if (insertCount === 0 ) {
-                console.log('插入失败!',insertCount);
-            }else{
+            if (insertCount === 0) {
+                console.log('插入失败!', insertCount);
+            } else {
                 console.log('插入' + insertCount + '条数据' + new Date());
             }
         } finally {
             M.pool.releaseConnection(db);
         }
     },
-    autoListenerMyChbtcOrder:function*(){
-       //var orderList = yield chBtcService.getOrdersIgnoreTradeType('btc');
-       //yield chBtcService.getOrder('btc',20170902910480052);
+    autoListenerMyChbtcOrder: function*() {
+        //var orderList = yield chBtcService.getOrdersIgnoreTradeType('btc');
+        //yield chBtcService.getOrder('btc',20170902910480052);
         //yield chBtcService.order('buy','bts',1,0.01);
-        yield chBtcService.cancelOrder('bts',2017090620937512);
+        yield chBtcService.cancelOrder('bts', 2017090620937512);
+    },
+    listnerBinaner: function*() {
+
+        //console.log('start', G.startBinance);
+        if (G.bianceList != undefined && G.bianceList.length > 0) {
+
+            console.log('待插入数据: ' + G.bianceList.length);
+            if (G.bianceList.length > 5) {
+                let list = [];
+                list.push(G.bianceList.pop());
+                list.push(G.bianceList.pop());
+                list.push(G.bianceList.pop());
+                list.push(G.bianceList.pop());
+                list.push(G.bianceList.pop());
+
+                let values = [];
+                for (i = 0; i < list.length; i++) {
+                    let {e: eventType, E: eventTime, s: symbol, k: ticks} = list[i];
+                    let {o: open, h: high, l: low, c: close, v: volume, n: trades, i: interval, x: isFinal, q: quoteVolume, V: buyVolume, Q: quoteBuyVolume, t: startTime, T: endTime} = ticks;
+                    if (symbol.substr(symbol.length - 3, 3) == 'BTC') {
+                        open = open * G.binance.btc;
+                        close = close * G.binance.btc;
+                        high = high * G.binance.btc;
+                        low = low * G.binance.btc;
+                    }
+                    values.push(symbol);
+                    values.push(M.moment(endTime).format('YYYY-MM-DD HH:mm'));
+                    values.push(open);
+                    values.push(close);
+                    values.push(high);
+                    values.push(low);
+                    values.push(volume);
+                }
+
+                const sql = 'insert into binaner (market,startTime,open,close,high,low,volume) values(?,?,?,?,?,?,?),(?,?,?,?,?,?,?),(?,?,?,?,?,?,?),(?,?,?,?,?,?,?),(?,?,?,?,?,?,?)';
+                const params = values;
+                try {
+                    var db = M.pool.getConnection();
+                    yield db.query(sql, params);
+                } finally {
+                    M.pool.releaseConnection(db);
+                }
+            }else {
+                const candlesticks = G.bianceList.pop();
+                let {e: eventType, E: eventTime, s: symbol, k: ticks} = candlesticks ;
+                let {o: open, h: high, l: low, c: close, v: volume, n: trades, i: interval, x: isFinal, q: quoteVolume, V: buyVolume, Q: quoteBuyVolume, t: startTime, T: endTime} = ticks;
+                if (symbol.substr(symbol.length - 3, 3) == 'BTC') {
+                    open = open * G.binance.btc;
+                    close = close * G.binance.btc;
+                    high = high * G.binance.btc;
+                    low = low * G.binance.btc;
+                }
+                let values = [];
+                values.push(symbol);
+                values.push(M.moment(endTime).format('YYYY-MM-DD HH:mm'));
+                values.push(open);
+                values.push(close);
+                values.push(high);
+                values.push(low);
+                values.push(volume);
+
+                const sql = 'insert into binaner (market,startTime,open,close,high,low,volume) values(?,?,?,?,?,?,?)';
+                const params = values;
+                try {
+                    var db = M.pool.getConnection();
+                    yield db.query(sql, params);
+                } finally {
+                    M.pool.releaseConnection(db);
+                }
+            }
+        }
+
+        const listKey = ['BTCUSDT','XRPBTC', 'XVGBTC', 'ETHBTC', 'ADABTC', 'POEBTC', 'TRXBTC', 'XLMBTC', 'IOTABTC', 'BCCBTC', 'NEOBTC', 'LTCBTC', 'QTUMBTC', 'VENBTC', 'HSRBTC', 'FUNBTC', 'LENDBTC', 'ELFBTC', 'STORJBTC', 'ICXBTC', 'BNBBTC', 'EOSBTC', 'CNDBTC', 'QSPBTC', 'TNBBTC', 'MCOBTC', 'MODBTC', 'OMGBTC', 'BTSBTC', 'DASHBTC', 'XMRBTC', 'MANABTC', 'SALTBTC', 'REQBTC', 'ETCBTC', 'LSKBTC', 'BRDBTC', 'ENGBTC', 'AIONBTC', 'SNTBTC', 'WTCBTC', 'ENJBTC', 'ADXBTC', 'STRATBTC', 'OSTBTC', 'BQXBTC', 'TNTBTC', 'ZRXBTC', 'LINKBTC', 'FUELBTC', 'BTGBTC', 'ARKBTC', 'XZCBTC', 'ASTBTC', 'SUBBTC', 'CDTBTC', 'TRIGBTC', 'POWRBTC', 'KMDBTC', 'VIBBTC', 'CTRBTC', 'RCNBTC', 'WINGSBTC', 'GTOBTC', 'WABIBTC', 'BATBTC', 'LRCBTC', 'MTHBTC', 'ZECBTC', 'RDNBTC', 'KNCBTC', 'CMTBTC', 'MTLBTC', 'DNTBTC', 'GASBTC', 'WAVESBTC', 'SNMBTC', 'MDABTC', 'YOYOBTC', 'LUNBTC', 'SNGLSBTC', 'NAVBTC', 'NULSBTC', 'DGDBTC', 'BNTBTC', 'BCPTBTC', 'ICNBTC', 'AMBBTC', 'GXSBTC', 'GVTBTC', 'ARNBTC', 'EVXBTC', 'PPTBTC', 'NEBLBTC', 'BCDBTC', 'EDOBTC', 'OAXBTC', 'DLTBTC'];
+        //const listKey = ['BTCUSDT', 'XRPBTC', 'XVGBTC','ADABTC', 'POEBTC', 'TRXBTC', 'XLMBTC', 'IOTABTC'];
+        const interval = '1m';
+        if (G.startBinance == undefined) {
+            G.startBinance = false;
+        }
+        if (G.startBinance) return;
+        try {
+            G.startBinance = true;
+            console.log("execute");
+            var promise = new Promise(function (resolve, reject) {
+                binance.websockets.candlesticks(listKey, "1m", function (candlesticks) {
+
+                    let {k: ticks, s: symbol} = candlesticks;
+                    let {x: isFinal, c: close} = ticks;
+                    if (symbol == 'BTCUSDT') {
+                        G.binance = {
+                            btc: close
+                        }
+                    }
+                    if (isFinal) {
+                        if (G.bianceList == undefined) G.bianceList = [];
+                        G.bianceList.push(candlesticks);
+                    }
+                    /*console.log(symbol + " " + interval + " candlestick update");
+                     console.log(M.moment(startTime).format('YYYY-MM-DD HH:mm:ss') + '至' + M.moment(endTime).format('YYYY-MM-DD HH:mm:ss'));
+                     console.log("open: " + open);
+                     console.log("high: " + high);
+                     console.log("low: " + low);
+                     console.log("close: " + close);
+                     console.log("volume: " + volume);*/
+                    //console.log("isFinal: " + isFinal);
+                    resolve(candlesticks);
+
+                });
+            });
+        } catch (e) {
+            console.log(e);
+            G.startBinance = false;
+        }
+
     }
+
 }

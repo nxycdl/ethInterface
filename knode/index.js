@@ -270,7 +270,7 @@ module.exports = function (root, kpath) {
     const listenerBinanceKLine = new CronJob(
         '*/1 * * * * *',
         function () {
-            co(cronService.listnerBinaner());
+            //co(cronService.listnerBinaner());
         },
         false,
         "Asia/Shanghai"

@@ -18,15 +18,18 @@ module.exports = {
     },
     kline: function*() {
         var options = {
-            market: this.query.market,
+            market: (this.query.market).toUpperCase(),
             interval: this.query.interval || '1m'
         }
+        options.interval = (options.interval).toLowerCase();
+
         const sql = 'select * from binaner where market = ? and intval = ? order by startTime ';
         let rowData = [];
+        let volumes = [];
 
         var db = M.pool.getConnection();
         try {
-            var data = yield db.query(sql, [options.market, options.interval]);
+            var data = yield db.query(sql, [(options.market), options.interval]);
             data = data[0];
             for (i = 0; i < data.length; i++) {
                 let row = [];
@@ -41,11 +44,13 @@ module.exports = {
                 row.push(0);
                 row.push(data[i].volume);
                 rowData.push(row);
+                volumes.push(data[i].volume);
             }
         } finally {
             M.pool.releaseConnection(db);
         }
         options.rowData = JSON.stringify(rowData);
+        options.volumes = JSON.stringify(volumes);
         this.body = yield this.render("binance/kline", options);
     },
 }

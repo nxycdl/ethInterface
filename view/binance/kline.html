@@ -35,9 +35,10 @@
             var market = '{{market}}';
             console.log(market);
             var rawData = '{{rowData}}';
-            //console.log(rawData);
             rawData = JSON.parse(rawData.replace(/&quot;/g, '"'));
-            console.log(rawData);
+
+            var volumes = '{{volumes}}';
+            volumes = JSON.parse(volumes.replace(/&quot;/g, '"'));
 
             function calculateMA(dayCount, data) {
                 var result = [];
